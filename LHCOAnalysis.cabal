@@ -4,11 +4,13 @@ Synopsis:	LHC Olympics File Analysis Code
 Description: 	My LHC Olympics Analysis Code. It can create binary bytestring file
 		for LHC Olympics format data and analyze it and create histograms 
 		with predefined cut sets. 
-License: 	BSD-3
+License: 	BSD3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
-Build-Depends:	base, binary
+Build-Depends:	base, binary, mtl, bytestring, array, containers, vector, bytestring-lexing, split
+Build-Type: 	Simple
 
 Executable: 	lhcotest
 Main-is: 	Main.hs
+hs-source-dirs: src
