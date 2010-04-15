@@ -2,13 +2,10 @@
 
 module LHCOAnalysis.Analysis.Hist where
 
-import Debug.Trace
 
 import Control.Monad.ST
 import Data.Array.ST
 import Data.Array.Unboxed
-
-import Data.STRef
 
 
 type Hist s = STUArray s Int 
@@ -21,8 +18,8 @@ data HistEnv = HistEnv { starting :: Double
                        }
 
 build_histogram :: HistEnv -> ST s (Hist s Int)
-build_histogram histenv@(HistEnv start end step) 
-    = build start end step
+build_histogram (HistEnv start end stp) 
+    = build start end stp
                           
 add_to_histogram :: HistEnv -> Hist s Int -> Double -> ST s ()
 add_to_histogram histenv hist val =
@@ -36,7 +33,7 @@ add_to_histogram histenv hist val =
 
 
 findbin :: Double -> Double -> Double -> Double -> Int 
-findbin start end stp val = let x = fromInteger $ floor $ (val - start) / stp  
+findbin start _ stp val = let x = fromInteger $ floor $ (val - start) / stp  
                             in{- trace ("start = " ++ show start
                                       ++ ", end = " ++ show end 
                                       ++ ", stp = " ++ show stp
@@ -44,9 +41,9 @@ findbin start end stp val = let x = fromInteger $ floor $ (val - start) / stp
                                       ++ ", x = " ++ show x) -} x 
 
 
---build :: Double -> Double -> Double -> ST s (Hist s Int) 
-build start end step 
-    = do let n = floor ((end - start) / step )
+build :: Double -> Double -> Double -> ST s (Hist s Int) 
+build start end stp 
+    = do let n = floor ((end - start) / stp )
          hist <- newArray (0,n) 0 
          return hist
 

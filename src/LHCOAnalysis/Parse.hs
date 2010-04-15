@@ -2,13 +2,8 @@
 
 module LHCOAnalysis.Parse where
 
-import Debug.Trace
-
-import LHCOAnalysis
 import LHCOAnalysis.PhysObj
 
---import Prelude hiding (map,foldl,null,filter,lines,(++))
--- import Data.List.Stream
 import qualified Data.List.Split as SP
 
 import Data.ByteString.Lex.Lazy.Double
@@ -20,6 +15,7 @@ data Parsed = Comment B.ByteString | Zero Int | Nonzero (Int,EachObj) | Strange
               deriving (Show)
 
 
+parsestr :: B.ByteString -> [PhyEventClassified]
 parsestr str1 = 
     let strlines = B.lines str1 
         parsed = map classify_line strlines
@@ -31,24 +27,23 @@ parsestr str1 =
         classified  = map constructPhysObjClass unnonzeroed 
     in  classified 
 
-isRight (Left x)  = False 
-isRight (Right x) = True
-
-unRight (Right x) = x
-unRight (Left x)  = undefined
-
+isComment :: Parsed -> Bool 
 isComment (Comment _) = True
 isComment _ = False
 
+isStrange :: Parsed -> Bool
 isStrange Strange = True
 isStrange _ = False
 
+isZero :: Parsed -> Bool
 isZero (Zero _) = True
 isZero _ = False
 
+unNonzero :: Parsed -> (Int, EachObj)
 unNonzero (Nonzero x) = x
 unNonzero _ = undefined
 
+constructPhysObjClass :: [(Int, EachObj)] -> PhyEventClassified
 constructPhysObjClass lst = 
     let classified = foldl addEachObjtoClassified zeroevent lst
         sortedclassified = sortPhyEventC classified 
@@ -64,12 +59,12 @@ classify_line bstr = let trimmed = B.dropWhile (isSpaceChar8) bstr
                              in case h of 
                                   '#' -> Comment trimmed 
                                   '0' -> parse_zero trimmed
-                                  otherwise -> parse_nonzero trimmed
+                                  _   -> parse_nonzero trimmed
 
 
 parse_zero :: B.ByteString -> Parsed
 parse_zero bstr = let bstrlst = B.split ' ' bstr
-                      a1:a2:[] = take 2 $ filter (not . B.null) bstrlst
+                      _:a2:[] = take 2 $ filter (not . B.null) bstrlst
                       b2 = maybe 0 fst $ B.readInt a2
                   in  Zero b2
 
@@ -112,7 +107,7 @@ mkEachObj typ eta phi pt jmas ntrk btag hadem dum1 dum2
                 else EO $ ObjBJet { etaphiptbjet  = (eta,phi,pt)
                                   , numtrkbjet    = round ntrk }
            6 -> EO $ ObjMET { phiptmet = (phi,pt) }
-                  
+           _ -> error "not a predefined type"
      
 addEachObjtoClassified :: PhyEventClassified -> (Int,EachObj) 
                           -> PhyEventClassified

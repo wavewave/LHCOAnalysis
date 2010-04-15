@@ -7,6 +7,7 @@ import LHCOAnalysis.Utility
 
 --import Data.ByteString.Lazy 
 -- import Data.ByteString.Lazy hiding (reverse)
+import Data.Function
 import Data.Binary 
 import Data.List (sortBy)
 --  phantom type for the object type
@@ -39,16 +40,15 @@ data ObjTag a where
 
 
 
-cot x = 1.0 / tan x
-csc x = 1.0 / sin x
-
-
 data TauProng = Prong1 | Prong3
 data ECharge  = CPlus  | CMinus
 
+ntrktoecharge :: Double -> ECharge 
 ntrktoecharge ntrk = if ntrk > 0 then CPlus else CMinus
+
+ntrktotauprong :: Double -> TauProng
 ntrktotauprong ntrk = let absntrk = abs ntrk
-                      in if ntrk > 0.9 && ntrk < 1.1  
+                      in if absntrk > 0.9 && absntrk < 1.1  
                          then Prong1
                          else Prong3
 
@@ -88,8 +88,9 @@ ptcompare x y = compare (pt x) (pt y)
 class ChargedObj a where
   charge  :: a -> Int
 
+headsafe :: [a] -> Maybe a 
 headsafe []     = Nothing
-headsafe (x:xs) = Just x 
+headsafe (x:_) = Just x 
 
 first_positive :: (ChargedObj a) => [a] -> Maybe a 
 first_positive lst = headsafe $ dropWhile (\x->(charge x < 0)) lst
@@ -121,6 +122,7 @@ data PhyEventClassified = PhyEventClassified
                            bjetlst     :: [(Int,(PhyObj BJet))],
                            met         :: PhyObj MET }
 
+zeroevent :: PhyEventClassified
 zeroevent = PhyEventClassified [] [] [] [] [] [] (ObjMET (0,0))
 
 -- | sort PhysEventClassfied with PT ordering
@@ -132,13 +134,12 @@ sortPhyEventC p = let phl = photonlst p
                       jel = jetlst p 
                       bjl = bjetlst p 
                       met'= met p 
-                      cmpfun (i,x) (j,y) = ptcompare x y 
-                      phl' = reverse $ sortBy cmpfun phl
-                      ell' = reverse $ sortBy cmpfun ell
-                      mul' = reverse $ sortBy cmpfun mul
-                      tal' = reverse $ sortBy cmpfun tal
-                      jel' = reverse $ sortBy cmpfun jel
-                      bjl' = reverse $ sortBy cmpfun bjl
+                      phl' = reverse $ sortBy (ptcompare `on` snd) phl
+                      ell' = reverse $ sortBy (ptcompare `on` snd) ell
+                      mul' = reverse $ sortBy (ptcompare `on` snd) mul
+                      tal' = reverse $ sortBy (ptcompare `on` snd) tal
+                      jel' = reverse $ sortBy (ptcompare `on` snd) jel
+                      bjl' = reverse $ sortBy (ptcompare `on` snd) bjl
                   in  PhyEventClassified phl' ell' mul' tal' jel' bjl' met'
 
 -- | num of object in one event
@@ -149,7 +150,7 @@ numofobj Muon p     = Prelude.length (muonlst p)
 numofobj Tau p      = Prelude.length (taulst p)
 numofobj Jet p      = Prelude.length (jetlst p)
 numofobj BJet p     = Prelude.length (bjetlst p)
-numofobj MET p      = 1
+numofobj MET _      = 1
 
 
 --  From here on, I am defining the instances. 
@@ -160,6 +161,7 @@ instance Binary (TauProng) where
            return $ case tag of 
                       1 -> Prong1
                       3 -> Prong3
+                      _ -> error "not a TauProng"
 
 instance Binary (ECharge) where
   put (CPlus)  = putWord8 1
@@ -168,30 +170,31 @@ instance Binary (ECharge) where
            return $ case tag of 
                       1  -> CPlus
                       -1 -> CMinus
+                      _  -> error "not a ECharge"
 
 instance Binary (PhyObj Photon) where
   put (ObjPhoton x) = putWord8 100 >> put x 
-  get = do tag <- getWord8
+  get = do getWord8
            x   <- get
            return (ObjPhoton x)
            
 instance Binary (PhyObj Electron) where
   put (ObjElectron x y) = putWord8 101 >> put x >> put y 
-  get = do tag <- getWord8
+  get = do getWord8
            x <- get 
            y <- get 
            return (ObjElectron x y)
 
 instance Binary (PhyObj Muon) where
   put (ObjMuon x y) = putWord8 102 >> put x >> put y 
-  get = do tag <- getWord8
+  get = do getWord8
            x <- get
            y <- get
            return (ObjMuon x y)
 
 instance Binary (PhyObj Tau) where
   put (ObjTau x y z) = putWord8 103 >> put x >> put y >> put z 
-  get = do tag <- getWord8
+  get = do getWord8
            x <- get 
            y <- get
            z <- get
@@ -199,46 +202,46 @@ instance Binary (PhyObj Tau) where
 
 instance Binary (PhyObj Jet) where
   put (ObjJet x y) = putWord8 104 >> put x >> put y 
-  get = do tag <- getWord8
+  get = do getWord8
            x <- get 
            y <- get 
            return (ObjJet x y)
 
 instance Binary (PhyObj BJet) where
   put (ObjBJet x y) = putWord8 105 >> put x >> put y 
-  get = do tag <- getWord8
+  get = do getWord8
            x <- get            
            y <- get 
            return (ObjBJet x y)
 
 instance Binary (PhyObj MET) where
   put (ObjMET x) = putWord8 106 >> put x 
-  get = do tag <- getWord8
+  get = do getWord8
            x <- get            
            return (ObjMET x)
            
            
 
 instance Show (PhyObj Photon) where
-  show x = "(photon)"
+  show _ = "(photon)"
   
 instance Show (PhyObj Electron) where
-  show x = "(electron)"
+  show _ = "(electron)"
 
 instance Show (PhyObj Muon) where
-  show x = "(muon)"
+  show _ = "(muon)"
 
 instance Show (PhyObj Tau) where
-  show x = "(tau)"
+  show _ = "(tau)"
 
 instance Show (PhyObj Jet) where
-  show x = "(jet)"
+  show _ = "(jet)"
 
 instance Show (PhyObj BJet) where
-  show x = "(bjet)"
+  show _ = "(bjet)"
 
 instance Show (PhyObj MET) where
-  show x = "(met)"
+  show _ = "(met)"
 
 
 instance Binary EachObj where
@@ -276,6 +279,7 @@ instance Binary EachObj where
                        return $ EO x
              106 -> do (x :: PhyObj MET) <- get
                        return $ EO x
+             _   -> error "strange object"
 
 {--
 instance Binary EachObj where
@@ -298,7 +302,7 @@ instance Binary PhyEventClassified where
                        >> put (jetlst x)
                        >> put (bjetlst x)
                        >> put (met x)
-  get = do tag <- getWord8 
+  get = do getWord8 
            x0 <- get 
            x1 <- get
            x2 <- get 
@@ -312,24 +316,6 @@ instance Show PhyEventClassified where
   show (PhyEventClassified x0 x1 x2 x3 x4 x5 x6) = 
     show x0 ++ show x1 ++ show x2 ++ show x3 ++ show x4 ++ show x5 ++ show x6
 
-
-etatocosth et =  ( exp (2.0 * et) - 1 ) / (exp (2.0 * et) + 1 )
-costhtoeta costh =  0.5 * log ( ( 1 + costh ) / ( 1 - costh ) )  
-
-fst3 (a,_,_) = a
-snd3 (_,a,_) = a
-trd3 (_,_,a) = a 
-
-fourmomfrometaphipt etaphipt = (p0, p1, p2, p3 )
-  where eta = fst3 etaphipt 
-        phi = snd3 etaphipt
-        pt  = trd3 etaphipt
-        costh = etatocosth eta
-        sinth = sqrt (1 - costh*costh)
-        p1  = pt * cos phi 
-        p2  = pt * sin phi
-        p3  = pt * costh / sinth 
-        p0  = pt / sinth
 
 -- Charged Object  
 

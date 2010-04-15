@@ -2,19 +2,14 @@
 
 module LHCOAnalysis.Analysis.CutSets where
 
-import LHCOAnalysis.Utility
 import LHCOAnalysis.PhysObj
+import LHCOAnalysis.Utility
 
-import Control.Monad 
-import Data.Maybe
+check :: a -> Maybe a
+check = return
+ 
 
---instance Monad (Either String) where
---  return v = Right v -
---  fail   s = Left s 
---  (Left s) >>= _ = Left s
---  (Right v) >>= f = f v 
-
-
+dilepton_inv_mass :: PhyEventClassified -> Maybe Double
 dilepton_inv_mass p = 
   do  -- apply 100 GeV jet veto cut
       jet_veto 1000 p                        
@@ -27,13 +22,14 @@ dilepton_inv_mass p =
       -- construct invariant mass square
       return $ sqrt (2.0 * (dot4 posmom negmom))
  
-check = return
- 
+jet_veto :: Double -> PhyEventClassified -> Maybe PhyEventClassified
 jet_veto valGeV p = 
     do check $ numofobj Jet p >= 1
        check $ (pt.snd.head) (jetlst p) > valGeV
        return p 
-                             
+
+hardest_leptons :: Double -> PhyEventClassified 
+                -> Maybe ([PhyObj Electron], [PhyObj Muon])
 hardest_leptons valGeV p =  
   do let ellst = electronlst p 
          mulst = muonlst p 
@@ -43,27 +39,27 @@ hardest_leptons valGeV p =
      check $ length ellst' == 0 && length mulst' == 0 
      return (ellst',mulst')
 
-opp_sign_electron_exclusive ellst = 
-  do check $ length ellst == 2
-     x <- first_positive ellst 
-     y <- first_negative ellst                  
-     return (fourmom x, fourmom y)
-
-opp_sign_muon_exclusive mulst =
-  do check $ length mulst == 2
-     x <- first_positive $ mulst 
-     y <- first_negative $ mulst                  
+opp_sign_exclusive :: (ChargedObj a, MomObj a) => [a] 
+                   -> Maybe (FourMomentum, FourMomentum)
+opp_sign_exclusive lst = 
+  do check $ length lst == 2
+     x <- first_positive lst 
+     y <- first_negative lst                  
      return (fourmom x, fourmom y)
 
 xor :: Maybe a -> Maybe a -> Maybe a
-xor (Just x) (Just y) = Nothing
+xor (Just _) (Just _) = Nothing
 xor Nothing (Just x)  = Just x
 xor (Just x) Nothing  = Just x
 xor Nothing Nothing   = Nothing
            
+two_same_kind_opp_sign_leptons :: (ChargedObj a, MomObj a, 
+                                   ChargedObj b, MomObj b) =>
+                                  ([a],[b]) -> Maybe (FourMomentum,FourMomentum)
 two_same_kind_opp_sign_leptons (ellst,mulst) =
-  let elresult = opp_sign_electron_exclusive ellst
-      muresult = opp_sign_muon_exclusive mulst
+  let elresult = opp_sign_exclusive ellst
+      muresult = opp_sign_exclusive mulst
   in  xor elresult muresult
-                
+ 
+electroncut :: PhyEventClassified -> Bool               
 electroncut p = (numofobj Electron p < 1) 

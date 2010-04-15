@@ -1,33 +1,21 @@
 module LHCOAnalysis.FetchBinary where
 
-import LHCOAnalysis
-import LHCOAnalysis.Utility
 import LHCOAnalysis.Analysis.CutSets
-import LHCOAnalysis.Parse
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.NewAnalysis
-
 import LHCOAnalysis.Analysis.Hist
 
-import LHCOAnalysis.MakeBinary
-
-
-
-import Data.Array.Unboxed
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Binary as Bi
 import System.IO
 
 import Data.Int
-
-import Control.Concurrent
-import Control.Concurrent.MVar
+import Data.Array.Unboxed
 
 import Control.Monad.State.Lazy
 import qualified Data.Binary.Get as G
 
-import Data.IORef
 
 
 
@@ -54,6 +42,7 @@ readbyte inh = do bytecontent <- B.hGetContents inh
           --        lst <- sequence $ repeat onefetchIO 
          ---         return $ map snd $ takeWhile fst lst 
 
+myread :: Handle -> IO (UArray Int Int)
 myread inh = 
     do lst <- readbyte inh
        let histenv = HistEnv 0 1000 20 
