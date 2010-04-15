@@ -1,4 +1,4 @@
-module Main where
+module LHCOAnalysis.FetchBinary where
 
 import LHCOAnalysis
 import LHCOAnalysis.Utility
