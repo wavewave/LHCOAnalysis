@@ -1,9 +1,13 @@
+{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE BangPatterns #-}
+
 module LHCOAnalysis.FetchBinary where
 
 import LHCOAnalysis.Analysis.CutSets
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.NewAnalysis
 import LHCOAnalysis.Analysis.Hist
+import LHCOAnalysis.Utility
 import LHCOAnalysis.ROOTApp
 
 
@@ -42,19 +46,21 @@ readbyte inh = do bytecontent <- B.hGetContents inh
           --        lst <- sequence $ repeat onefetchIO 
          ---         return $ map snd $ takeWhile fst lst 
 
-myread :: Handle -> IO (UArray Int Int)
-myread inh = 
+
+dilep_anal = let start = 0
+                 end   = 1000
+                 step  = 20 
+                 numbin = 50 
+                 filename = "mytest.root"
+                 histname = "mytest"
+                 curranal   = dilepton_inv_mass_jet_veto_bjet_veto (100,5,40)
+                 
+             in  dileptonInvMassJBJVETO start end step filename histname curranal
+
+
+myread :: (AnalysisTask a) => Handle -> a -> IO (UArray Int Int)
+myread inh !anal = 
     do lst <- readbyte inh
-       let start = 0
-           end   = 1000
-           step  = 20 
-           numbin = 50 
-           filename = "mytest.root"
-           histname = "mytest"
+       let result = make_histogram (snd3.histinfo $ anal) (analfunc anal) lst
 
-
-           histenv    = HistEnv start end step 
-           curranal   = dilepton_inv_mass_jet_veto_bjet_veto (100,5,40)
-           sqrtresult = make_histogram histenv  curranal lst
-
-       return sqrtresult
+       return result
