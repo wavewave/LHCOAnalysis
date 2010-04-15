@@ -4,6 +4,7 @@ import LHCOAnalysis.Analysis.CutSets
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.NewAnalysis
 import LHCOAnalysis.Analysis.Hist
+import LHCOAnalysis.ROOTApp
 
 
 import qualified Data.ByteString.Lazy.Char8 as B
@@ -15,7 +16,6 @@ import Data.Array.Unboxed
 
 import Control.Monad.State.Lazy
 import qualified Data.Binary.Get as G
-
 
 
 
@@ -45,7 +45,16 @@ readbyte inh = do bytecontent <- B.hGetContents inh
 myread :: Handle -> IO (UArray Int Int)
 myread inh = 
     do lst <- readbyte inh
-       let histenv = HistEnv 0 1000 20 
-           sqrtresult = make_histogram histenv dilepton_inv_mass lst
-      
+       let start = 0
+           end   = 1000
+           step  = 20 
+           numbin = 50 
+           filename = "mytest.root"
+           histname = "mytest"
+
+
+           histenv    = HistEnv start end step 
+           curranal   = dilepton_inv_mass_jet_veto_bjet_veto (100,5,40)
+           sqrtresult = make_histogram histenv  curranal lst
+
        return sqrtresult

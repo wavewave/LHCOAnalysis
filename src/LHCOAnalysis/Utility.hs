@@ -59,6 +59,19 @@ fourmomfrometaphipt !etaphipt = (p0, p1, p2, p3 )
         p0  = pt' / sinth
 
 
+invmasssqr :: FourMomentum -> FourMomentum -> Double
+invmasssqr !mom1 !mom2 = dot4 mom1 mom1 + dot4 mom2 mom2 
+                         + invmasssqr0 mom1 mom2
+
+invmasssqr0 :: FourMomentum -> FourMomentum -> Double
+invmasssqr0 !mom1 !mom2 = 2.0 * dot4 mom1 mom2
+
+invmass :: FourMomentum -> FourMomentum -> Double
+invmass !mom1 !mom2 = sqrt $! invmasssqr mom1 mom2
+
+invmass0 :: FourMomentum -> FourMomentum -> Double
+invmass0 !mom1 !mom2 = sqrt $! invmasssqr0 mom1 mom2
+
 
 --lstprint :: (Show a, Show b) => [(a,b)] -> String                      
 --lstprint lst = foldr1 f lst 

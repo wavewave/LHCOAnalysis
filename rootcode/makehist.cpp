@@ -17,21 +17,22 @@ using namespace std;
 
 
 
-extern int makehist( void  ) //  const char* histname, const char* filename ) 
+extern int makehist( const char* histname, const char* filename, 
+		     double start, double end, int numbin, int values[]  )
 {
   //  printf("haha\n");
-  cout << "haha" << endl; 
+  cout << "recording root file" << endl; 
   
-  TFile f("hist.root","new"); 
+  TFile f(filename,"new"); 
 
-  TH1F* hist = new TH1F("E+E-", "test" , 50, 0, 1000 ) ;
-  Double_t values[50] ; 
+  TH1F* hist = new TH1F(histname, histname , numbin, start, end ) ;
+  Double_t dvalues[1000] ; 
 
-  for( int i= 0 ; i < 50 ; i++ ) {
-    values[i] = i ; 
-  }
+  for( int i= 0 ; i < numbin ; i++ ) {
+    dvalues[i] = values[i] ; 
+  } 
 
-  hist->SetContent( values ) ; 
+  hist->SetContent( dvalues ) ; 
 
   hist->Write(); 
   

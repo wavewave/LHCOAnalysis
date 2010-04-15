@@ -5,29 +5,28 @@ module LHCOAnalysis.Analysis.CutSets where
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.Utility
 
-check :: a -> Maybe a
+check :: Bool -> Maybe Bool
 check = return
  
 
 
-dilepton_inv_mass :: PhyEventClassified -> Maybe Double
-dilepton_inv_mass p = 
-  do  -- apply 100 GeV jet veto cut
-      jet_veto 1000 p                        
-      -- select hardest lepton over 10 GeV    
-      (ellst,mulst) <- hardest_leptons 10 p 
-      -- select two opposite charged leptons with the same kind. 
-      -- if there are more leptons than we need, cut
+dilepton_inv_mass_jet_veto_bjet_veto :: (Double,Double,Double) 
+                                     -> PhyEventClassified ->Maybe Double
+dilepton_inv_mass_jet_veto_bjet_veto (jveto,bjveto,leptoncut) p = 
+  do  check (jet_veto jveto p)
+      check (bjet_veto bjveto p)
+      (ellst,mulst) <- hardest_leptons leptoncut p 
       (posmom,negmom) <- two_same_kind_opp_sign_leptons (ellst,mulst)
---      return (posmom,negmom)
-      -- construct invariant mass square
-      return $ sqrt (2.0 * (dot4 posmom negmom))
+      return $ invmass0 posmom negmom
  
-jet_veto :: Double -> PhyEventClassified -> Maybe PhyEventClassified
-jet_veto valGeV p = 
-    do check $ numofobj Jet p >= 1
-       check $ (pt.snd.head) (jetlst p) > valGeV
-       return p 
+bjet_veto :: Double -> PhyEventClassified -> Bool 
+bjet_veto valGeV p = not ( numofobj BJet p >= 1
+                           && (pt.snd.head) (bjetlst p) > valGeV )
+
+jet_veto :: Double -> PhyEventClassified -> Bool
+jet_veto valGeV p = not ( numofobj Jet p >= 1
+                          && (pt.snd.head) (jetlst p) > valGeV )
+       
 
 hardest_leptons :: Double -> PhyEventClassified 
                 -> Maybe ([PhyObj Electron], [PhyObj Muon])
