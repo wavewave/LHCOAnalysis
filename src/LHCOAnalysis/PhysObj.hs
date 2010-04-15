@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -fglasgow-exts  #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, BangPatterns #-}
 
 module LHCOAnalysis.PhysObj where
 
@@ -53,25 +53,25 @@ ntrktotauprong ntrk = let absntrk = abs ntrk
                          else Prong3
 
 data PhyObj a where   
-  ObjPhoton   :: { etaphiptphoton :: (Double, Double, Double) 
+  ObjPhoton   :: { etaphiptphoton :: !(Double, Double, Double) 
                  } -> PhyObj Photon
-  ObjElectron :: { etaphiptelectron :: (Double, Double, Double)
-                 , chargeelectron :: ECharge
+  ObjElectron :: { etaphiptelectron :: !(Double, Double, Double)
+                 , chargeelectron :: !ECharge
                  } -> PhyObj Electron 
-  ObjMuon     :: { etaphiptmuon :: (Double, Double, Double)
-                 , chargemuon :: ECharge
+  ObjMuon     :: { etaphiptmuon :: !(Double, Double, Double)
+                 , chargemuon :: !ECharge
                  } -> PhyObj Muon 
-  ObjTau      :: { etaphipttau :: (Double, Double, Double)
-                 , chargetau   :: ECharge
-                 , prongtau    :: TauProng 
+  ObjTau      :: { etaphipttau :: !(Double, Double, Double)
+                 , chargetau   :: !ECharge
+                 , prongtau    :: !TauProng 
                  } -> PhyObj Tau 
-  ObjJet      :: { etaphiptjet :: (Double, Double, Double)
-                 , numtrkjet   :: Int
+  ObjJet      :: { etaphiptjet :: !(Double, Double, Double)
+                 , numtrkjet   :: !Int
                  } -> PhyObj Jet
-  ObjBJet     :: { etaphiptbjet :: (Double, Double, Double)
-                 , numtrkbjet   :: Int
+  ObjBJet     :: { etaphiptbjet :: !(Double, Double, Double)
+                 , numtrkbjet   :: !Int
                  } -> PhyObj BJet
-  ObjMET      :: { phiptmet    :: (Double,Double)
+  ObjMET      :: { phiptmet    :: !(Double,Double)
                  } -> PhyObj MET
                  
 
@@ -114,13 +114,13 @@ data EachObj where
 type PhyEvent = [(Int,EachObj)] 
 
 data PhyEventClassified = PhyEventClassified 
-                         { photonlst   :: [(Int,(PhyObj Photon))], 
-                           electronlst :: [(Int,(PhyObj Electron))],
-                           muonlst     :: [(Int,(PhyObj Muon))], 
-                           taulst      :: [(Int,(PhyObj Tau))], 
-                           jetlst      :: [(Int,(PhyObj Jet))],
-                           bjetlst     :: [(Int,(PhyObj BJet))],
-                           met         :: PhyObj MET }
+                         { photonlst   :: ![(Int,(PhyObj Photon))], 
+                           electronlst :: ![(Int,(PhyObj Electron))],
+                           muonlst     :: ![(Int,(PhyObj Muon))], 
+                           taulst      :: ![(Int,(PhyObj Tau))], 
+                           jetlst      :: ![(Int,(PhyObj Jet))],
+                           bjetlst     :: ![(Int,(PhyObj BJet))],
+                           met         :: !(PhyObj MET) }
 
 zeroevent :: PhyEventClassified
 zeroevent = PhyEventClassified [] [] [] [] [] [] (ObjMET (0,0))

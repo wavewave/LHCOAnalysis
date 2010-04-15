@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE BangPatterns #-}
 
 module LHCOAnalysis.Utility where
 
@@ -19,21 +20,21 @@ pz :: (Double,Double,Double,Double) -> Double
 pz     (_,_,_,a) = a
 
 dot4 :: FourMomentum -> FourMomentum -> Double 
-dot4 (t1,x1,y1,z1) (t2,x2,y2,z2) = t1*t2 - x1*x2 - y1*y2 - z1*z2
+dot4 (!t1,!x1,!y1,!z1) (!t2,!x2,!y2,!z2) = t1*t2 - x1*x2 - y1*y2 - z1*z2
 
 
 cot :: Double -> Double
-cot x = 1.0 / tan x
+cot !x = 1.0 / tan x
 
 csc :: Double -> Double
-csc x = 1.0 / sin x
+csc !x = 1.0 / sin x
 
 
 etatocosth :: Double -> Double 
-etatocosth et =  ( exp (2.0 * et) - 1 ) / (exp (2.0 * et) + 1 )
+etatocosth !et =  ( exp (2.0 * et) - 1 ) / (exp (2.0 * et) + 1 )
 
 costhtoeta :: Double -> Double
-costhtoeta costh =  0.5 * log ( ( 1 + costh ) / ( 1 - costh ) )  
+costhtoeta !costh =  0.5 * log ( ( 1 + costh ) / ( 1 - costh ) )  
 
 fst3 :: (a,b,c) -> a
 fst3 (a,_,_) = a
@@ -46,7 +47,7 @@ trd3 (_,_,a) = a
 
 
 fourmomfrometaphipt :: (Double,Double,Double) -> FourMomentum
-fourmomfrometaphipt etaphipt = (p0, p1, p2, p3 )
+fourmomfrometaphipt !etaphipt = (p0, p1, p2, p3 )
   where eta' = fst3 etaphipt 
         phi' = snd3 etaphipt
         pt'  = trd3 etaphipt
