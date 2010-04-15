@@ -2,8 +2,11 @@
 
 module LHCOAnalysis.Analysis.Hist where
 
+import Debug.Trace
+
 import Control.Monad.ST
 import Data.Array.ST
+import Data.Array.Unboxed
 
 import Data.STRef
 
@@ -17,11 +20,10 @@ data HistEnv = HistEnv { starting :: Double
                        , step     :: Double 
                        }
 
-build_histogram :: Double -> Double -> Double -> ST s (HistEnv, Hist s Int)
-build_histogram start end step = do let histenv = HistEnv start end step 
-                                    hist <- build start end step
-                                    return (histenv, hist)
-
+build_histogram :: HistEnv -> ST s (Hist s Int)
+build_histogram histenv@(HistEnv start end step) 
+    = build start end step
+                          
 add_to_histogram :: HistEnv -> Hist s Int -> Double -> ST s ()
 add_to_histogram histenv hist val =
   let start' = starting histenv
@@ -34,13 +36,18 @@ add_to_histogram histenv hist val =
 
 
 findbin :: Double -> Double -> Double -> Double -> Int 
-findbin start end stp val = fromInteger $ floor $ (val - start) / stp  
+findbin start end stp val = let x = fromInteger $ floor $ (val - start) / stp  
+                            in{- trace ("start = " ++ show start
+                                      ++ ", end = " ++ show end 
+                                      ++ ", stp = " ++ show stp
+                                      ++ ", val = " ++ show val 
+                                      ++ ", x = " ++ show x) -} x 
 
 
 --build :: Double -> Double -> Double -> ST s (Hist s Int) 
 build start end step 
     = do let n = floor ((end - start) / step )
-         hist <- newArray (1,n) 0 
+         hist <- newArray (0,n) 0 
          return hist
 
 peek :: Hist s Int -> Int -> ST s Int
@@ -54,16 +61,15 @@ apply :: Hist s Int -> Int -> (Int -> Int) -> ST s ()
 apply hist binnum func = do val <- readArray hist binnum
                             writeArray hist binnum (func val)
 
-{--
-main = print $ runST $ do hist <- build 0 100.0 10.0
-                          x <- peek hist 1 
-                          poke hist 2 3
-                          apply hist 4 (+1)
-                          y <- peek hist 2
-                          z <- peek hist 4
-                          return $ (x,y,z) --}
 
 build3d :: (Int,Int,Int) -> (Int,Int,Int) -> ST s (Hist3D s Int)
 build3d (start1,start2,start3) (end1,end2,end3)
     = do hist <- newArray ((start1,start2,start3),(end1,end2,end3)) 0 
          return hist
+
+add_two_hist_array :: UArray Int Int -> UArray Int Int -> UArray Int Int
+add_two_hist_array arr1 arr2 
+    = let bnds = bounds arr1
+          assoc1 = assocs arr1
+          assoc2 = assocs arr2
+      in accumArray (+) 0 bnds (assoc1 ++ assoc2)

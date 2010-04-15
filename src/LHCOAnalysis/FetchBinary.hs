@@ -56,9 +56,7 @@ readbyte inh = do bytecontent <- B.hGetContents inh
 
 myread inh = 
     do lst <- readbyte inh
-       let sqrresult = process_with_cut dilepton_inv_mass_sqr lst
-            -- sqrtresult = map sqrt sqrresult
-
-            -- print $ sqrresult
-                  
-       return sqrresult
+       let histenv = HistEnv 0 1000 20 
+           sqrtresult = make_histogram histenv dilepton_inv_mass lst
+      
+       return sqrtresult
