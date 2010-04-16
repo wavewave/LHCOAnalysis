@@ -54,7 +54,7 @@ dileptonInvMassJBJMETVETO s e st fn hn (jv,bjv,lv,metcut)
 
 
 instance AnalysisTask DileptonInvMassJBJMETVETO where
-    histinfo x = (dilepton_filename x, HistEnv s e st, nb)
+    histinfo x = (dilepton_histname x, HistEnv s e st, nb)
         where s = dilepton_start x
               e = dilepton_end   x
               st= dilepton_step  x
