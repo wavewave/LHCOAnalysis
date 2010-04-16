@@ -2,23 +2,35 @@
 
 module LHCOAnalysis.Analysis.CutSets where
 
+import Debug.Trace
+import System.IO.Unsafe
+
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.Utility
 
 check :: Bool -> Maybe Bool
-check = return
+check True  = Just True
+check False = Nothing
  
 
 
-dilepton_inv_mass_jet_veto_bjet_veto :: (Double,Double,Double) 
+dilepton_inv_mass_veto_jet_bjet_met_cut :: (Double,Double,Double,Double) 
                                      -> PhyEventClassified ->Maybe Double
-dilepton_inv_mass_jet_veto_bjet_veto (jveto,bjveto,leptoncut) p = 
+dilepton_inv_mass_veto_jet_bjet_met_cut (jveto,bjveto,leptoncut,metcut) p = 
   do  check (jet_veto jveto p)
       check (bjet_veto bjveto p)
+      x <- check (met_cut metcut p)
       (ellst,mulst) <- hardest_leptons leptoncut p 
       (posmom,negmom) <- two_same_kind_opp_sign_leptons (ellst,mulst)
       return $ invmass0 posmom negmom
  
+
+met_cut :: Double -> PhyEventClassified -> Bool 
+met_cut valGeV p = let ettest = (snd.phiptmet.met) p 
+
+                   in {-trace ("ettest = "++ show ettest ++ ": valGeV" ++ show valGeV) $-} ettest >= valGeV
+
+
 bjet_veto :: Double -> PhyEventClassified -> Bool 
 bjet_veto valGeV p = not ( numofobj BJet p >= 1
                            && (pt.snd.head) (bjetlst p) > valGeV )
@@ -36,13 +48,13 @@ hardest_leptons valGeV p =
          criterion x = (pt (snd x)) > valGeV
          ellst' = map snd $ filter criterion ellst
          mulst' = map snd $ filter criterion mulst
-     check $ length ellst' == 0 && length mulst' == 0 
+     check $ length ellst' > 0 || length mulst' > 0 
      return (ellst',mulst')
 
-opp_sign_exclusive :: (ChargedObj a, MomObj a) => [a] 
+opp_sign_first :: (ChargedObj a, MomObj a) => [a] 
                    -> Maybe (FourMomentum, FourMomentum)
-opp_sign_exclusive lst = 
-  do check $ length lst == 2
+opp_sign_first lst = 
+  do check $ length lst >= 2
      x <- first_positive lst 
      y <- first_negative lst                  
      return (fourmom x, fourmom y)
@@ -57,8 +69,8 @@ two_same_kind_opp_sign_leptons :: (ChargedObj a, MomObj a,
                                    ChargedObj b, MomObj b) =>
                                   ([a],[b]) -> Maybe (FourMomentum,FourMomentum)
 two_same_kind_opp_sign_leptons (ellst,mulst) =
-  let elresult = opp_sign_exclusive ellst
-      muresult = opp_sign_exclusive mulst
+  let elresult = opp_sign_first ellst
+      muresult = opp_sign_first mulst
   in  xor elresult muresult
  
 electroncut :: PhyEventClassified -> Bool               

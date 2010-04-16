@@ -47,17 +47,6 @@ readbyte inh = do bytecontent <- B.hGetContents inh
          ---         return $ map snd $ takeWhile fst lst 
 
 
-dilep_anal = let start = 0
-                 end   = 1000
-                 step  = 20 
-                 numbin = 50 
-                 filename = "mytest.root"
-                 histname = "mytest"
-                 curranal   = dilepton_inv_mass_jet_veto_bjet_veto (100,5,40)
-                 
-             in  dileptonInvMassJBJVETO start end step filename histname curranal
-
-
 myread :: (AnalysisTask a) => Handle -> a -> IO (UArray Int Int)
 myread inh !anal = 
     do lst <- readbyte inh
