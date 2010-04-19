@@ -2,7 +2,10 @@
 
 module LHCOAnalysis.Batch.Parallel where
 
-import LHCOAnalysis
+import LHCOAnalysis.NewAnalysis
+import LHCOAnalysis.ROOTApp
+import LHCOAnalysis.Analysis.Hist
+import LHCOAnalysis.FetchBinary
 
 import Data.Array.Unboxed
 
@@ -14,8 +17,16 @@ import Control.Concurrent
 import Foreign.C.String
 import qualified Foreign.Marshal.Array as FA
 
+type SingleParallelTask a = (a,[FilePath])
 
-doTsk :: (AnalysisTask a) => (a,[FilePath]) -> IO ()
+-- | Command multiple serial action at once. Each serial action consists of parallel actions. 
+
+doMultipleTsks :: (AnalysisTask a) => [SingleParallelTask a] -> IO () 
+doMultipleTsks lst =  mapM_ doTsk lst 
+
+-- | Command one action containing several parallel actions 
+
+doTsk :: (AnalysisTask a) => SingleParallelTask a -> IO ()
 doTsk tsk = 
     do let outfilename = rootfile (fst tsk)
        putStrLn $ "Work on " ++ outfilename

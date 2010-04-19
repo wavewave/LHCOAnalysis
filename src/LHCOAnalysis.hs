@@ -10,6 +10,7 @@ module LHCOAnalysis (
     module LHCOAnalysis.MakeBinary,
     module LHCOAnalysis.FetchBinary, 
     module LHCOAnalysis.ROOTApp, 
+    module LHCOAnalysis.Batch.Parallel,
     version
 ) where
 
@@ -22,6 +23,7 @@ import LHCOAnalysis.Analysis.Hist
 import LHCOAnalysis.MakeBinary
 import LHCOAnalysis.FetchBinary 
 import LHCOAnalysis.ROOTApp
+import LHCOAnalysis.Batch.Parallel
 
 -- | version
 version :: String 
