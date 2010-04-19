@@ -9,4 +9,9 @@ import Foreign.Ptr
 #include "makehist.h"
 
 foreign import ccall "makehist.h makehist" c_makehist
-    :: CString -> CString -> CDouble -> CDouble -> CInt -> Ptr CInt -> IO CInt
+  :: CString -> CString -> CDouble -> CDouble -> CInt -> Ptr CInt 
+     -> IO CInt
+
+foreign import ccall "makehist.h plothist" c_plothist
+  :: CString -> CString -> CString -> CString -> CString -> CString -> CInt  
+     -> IO CInt

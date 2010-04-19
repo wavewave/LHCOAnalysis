@@ -25,7 +25,8 @@ Exposed-Modules:
 		 LHCOAnalysis.MakeBinary,
 		 LHCOAnalysis.FetchBinary, 
 		 LHCOAnalysis.ROOTApp, 
- 		 LHCOAnalysis.Batch.Parallel
+ 		 LHCOAnalysis.Batch.Parallel,
+		 LHCOAnalysis.Analysis.Plot
 		 
 		 
 Extra-source-files: rootcode/makehist.h
