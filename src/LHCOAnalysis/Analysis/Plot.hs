@@ -7,6 +7,7 @@ import LHCOAnalysis.ROOTApp
 import System.IO
 import Foreign.C
 import Foreign.C.String
+import Foreign.ForeignPtr
 
 type HistName = String
 
@@ -33,4 +34,26 @@ plotHist plottype hname infile outfile hdeco = do
   c_plothist c_hname c_infile c_outfile 
     c_histtitle c_xaxistitle c_yaxistitle c_zero
     
+read_histogram_from_file :: FilePath -> String -> IO TH1F
+read_histogram_from_file filename histname 
+  = do c_filename <- newCString filename
+       c_histname <- newCString histname 
+       rptr <- c_read_histogram_from_file c_filename c_histname
+       fptr <- newForeignPtr_ rptr
+       return $ TH1F fptr
+       
+       
+       
+write_histogram_to_file :: TH1F -> FilePath -> IO ()
+write_histogram_to_file (TH1F fptr) filename 
+  = do c_filename <- newCString filename
+       let rptr = unsafeForeignPtrToPtr fptr
+       c_write_histogram_to_file rptr c_filename
 
+
+th1f_fill :: TH1F -> Double -> IO () 
+th1f_fill (TH1F fptr) val 
+  = do let c_val = realToFrac val 
+           rptr = unsafeForeignPtrToPtr fptr
+
+       c_th1f_fill rptr c_val 
