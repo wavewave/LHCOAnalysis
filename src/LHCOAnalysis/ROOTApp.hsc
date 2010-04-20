@@ -12,6 +12,9 @@ import Foreign.ForeignPtr
 #include "makehist.h"
 
 type CFunction = CDouble -> Ptr () -> CDouble
+type CFunctionPtr = Ptr CDouble -> Ptr CDouble -> Ptr () -> IO CDouble
+
+
 
 foreign import ccall "makehist.h makehist" c_makehist
   :: CString -> CString -> CDouble -> CDouble -> CInt -> Ptr CInt 
@@ -22,7 +25,7 @@ foreign import ccall "makehist.h plothist" c_plothist
      -> IO CInt
 
 foreign import ccall "makehist.h testfunptr" c_testfunptr
-  :: (FunPtr CFunction) -> IO CInt
+  :: (FunPtr CFunctionPtr) -> IO CInt
      
 data RawTH1F 
 newtype TH1F = TH1F (ForeignPtr RawTH1F) deriving (Eq, Ord,Show )

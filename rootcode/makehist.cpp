@@ -14,6 +14,7 @@
 #include "TCanvas.h"
 #include "TLorentzVector.h"
 #include "TStyle.h" 
+#include "TF1.h"
 
 using namespace std;
 
@@ -59,7 +60,6 @@ void write_histogram_to_file( TH1F_p p, const char* filename )
 int makehist( const char* histname, const char* filename, 
 		     double start, double end, int numbin, int values[]  )
 {
-  //  printf("haha\n");
   cout << "recording root file: " << filename << endl; 
   
   TFile f(filename,"new"); 
@@ -74,7 +74,6 @@ int makehist( const char* histname, const char* filename,
   hist->SetContent( dvalues ) ; 
 
   hist->Write(); 
-  
   
 }
 
@@ -117,47 +116,43 @@ int plothist( const char* histname, const char* filename,
   return 0; 
 }
 
+void fitphasespacecurve( TH1* hist, 
+			 Double_t xmin, Double_t xmax, 
+			 Double_t mA, Double_t mB, Double_t mC, Double_t mD, 
+			 Double_t norm, 
+			 double myfunc( double*, double* ) 
+			 
+) 
+{
+  Double_t normalization ; 
+  Double_t eta; 
+  
+  normalization = (mB*mB - mA*mA) / (TMath::Sqrt(2.0) *mB ) ; 
+  
+  eta =TMath::ATanH ( TMath::Sqrt( 1.0 - 4.0 * mB* mB / (mD * mD) ) ); 
+  
+  TF1 *f1 = new TF1("myfunc", myfunc, xmin, xmax , 3 ); 
+  
+  f1->SetParNames("normalization","eta", "overall");
+  f1->SetParameters( normalization, eta, norm ) ; 
+  
+  
+  hist->Fit("myfunc"); 
+  f1->Draw("same"); 
+  
+}
 
-/*
+
 int plothist_with_fitting( const char* histname, 
 			   const char* filename,
 			   const char* outfilename,
 			   const char* title,
 			   const char* xtitle, 
 			   const char* ytitle, 
-			   int plotfiletype 
-			   double funptr( double, double,double, double ) 
+			   int plotfiletype ,
+			   double funptr( double*, double* ) 
 			   )
 {
-  Double_t myfunc( Double_t *xlst, Double_t *par ) {
-    Double_t a = par[0]; 
-    Double_t b = par[1]; 
-    Double_t c = par[2];
-    Double_t x = xlst[0];
-    return funptr( a,b,c,x);
-  }
-  void fitphasespacecurve( TH1* hist, 
-			   Double_t xmin, Double_t xmax, 
-			   Double_t mA, Double_t mB, Double_t mC, Double_t mD, 
-			   Double_t norm) 
-  {
-    Double_t normalization ; 
-    Double_t eta; 
-    
-    normalization = (mB*mB - mA*mA) / (TMath::Sqrt(2.0) *mB ) ; 
-    
-    eta =TMath::ATanH ( TMath::Sqrt( 1.0 - 4.0 * mB* mB / (mD * mD) ) ); 
-    
-    TF1 *f1 = new TF1("myfunc", myfunc, xmin, xmax , 3 ); 
-    
-    f1->SetParNames("normalization","eta", "overall");
-    f1->SetParameters( normalization, eta, norm ) ; 
-    
-  
-    hist->Fit("myfunc"); 
-    f1->Draw("same"); 
-    
-  }
   
   cout << "reading root file: " << filename <<  endl; 
   
@@ -169,7 +164,7 @@ int plothist_with_fitting( const char* histname,
     return -1 ;
   }
   
-  fitphasespacecurve( hist, 0, 2000, 1600, 700, 700, 0, 1.0 ); 
+  fitphasespacecurve( hist, 0, 2000, 1600, 700, 700, 0, 1.0, funptr); 
 
   TCanvas* c1 = new TCanvas( "mycanvas","mycanvas" ) ; 
 
@@ -192,11 +187,19 @@ int plothist_with_fitting( const char* histname,
   //  delete title;
   return 0; 
 }
-*/
 
 
-extern int testfunptr( double funptr( double ) )
+int testfunptr( double funptr( double*, double* ) )
 {
-  cout << "funptr (" << 3 << ") = " << funptr (3) << endl; 
+  cout << "funptr (" << 0.3 << 0.4 << 0.5 << 0.6 << ") = " ; 
+
+  double x ; 
+  x = 0.6; 
+  double arg[3]; 
+  arg[0] = 0.3 ; 
+  arg[1] = 0.4 ; 
+  arg[2] = 0.5; 
+
+  cout << funptr (&x, arg) << endl; 
   return 0; 
 }

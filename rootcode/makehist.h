@@ -36,7 +36,7 @@ typedef Type ## _t const* const_ ## Type ## _p
 	      const char* ytitle, 
 	      int plotfiletype );
   
-  int testfunptr( double funptr( double ) );
+  int testfunptr( double funptr( double*, double* ) );
   
 #ifdef __cplusplus
 }

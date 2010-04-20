@@ -7,11 +7,12 @@ import System.IO
 testfun :: Double -> Double 
 testfun x = x + 1.0
 
+{-
 mai' = do let testcfun = makeCfunction testfun
           funptr <- makeFunPtr testcfun
           
           putStrLn "start test"
-          c_testfunptr funptr
+          c_testfunptr funptr -}
           
 {--
 main = do hist <- read_histogram_from_file "zprime_20100418.root" "20100418"
@@ -22,7 +23,7 @@ main = do hist <- read_histogram_from_file "zprime_20100418.root" "20100418"
           write_histogram_to_file hist "test2.root"  --}
 
 main = do let c_fitinvm = makeCfunctionPtr fitinvm
-          funptr <- makeFunPtr c_fitinvm          
+          funptr    <- makeFunPtrPtr c_fitinvm          
           
           putStrLn "start test"
           c_testfunptr funptr
