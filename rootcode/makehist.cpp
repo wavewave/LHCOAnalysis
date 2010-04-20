@@ -116,7 +116,7 @@ int plothist( const char* histname, const char* filename,
   return 0; 
 }
 
-void fitphasespacecurve( TH1* hist, 
+void fitphasespacecurve( TH1F* hist, 
 			 Double_t xmin, Double_t xmax, 
 			 Double_t mA, Double_t mB, Double_t mC, Double_t mD, 
 			 Double_t norm, 
@@ -143,29 +143,52 @@ void fitphasespacecurve( TH1* hist,
 }
 
 
-int plothist_with_fitting( const char* histname, 
-			   const char* filename,
-			   const char* outfilename,
-			   const char* title,
-			   const char* xtitle, 
-			   const char* ytitle, 
-			   int plotfiletype ,
-			   double funptr( double*, double* ) 
-			   )
+int fit_histogram( TH1F_p hist, 
+		   double start, 
+		   double end,
+		   double* param,
+		   double funptr( double*, double* )
+		   )
 {
-  
-  cout << "reading root file: " << filename <<  endl; 
-  
-  TFile f(filename); 
+  TH1F* histtemp = to_nonconst<TH1F, TH1F_t>(hist);
 
-  TH1F* hist = (TH1F*)f.Get(histname) ;
   if (hist == 0 ) {
-    cout << "no histogram with name : " << histname << endl; 
+    cout << "no histogram : " <<  endl; 
     return -1 ;
   }
   
-  fitphasespacecurve( hist, 0, 2000, 1600, 700, 700, 0, 1.0, funptr); 
+  fitphasespacecurve( histtemp, start, end, 
+		      param[0], param[1], param[2], param[3],
+		      100.0, funptr); 
 
+  return 0; 
+}
+
+
+int testfunptr( double funptr( double*, double* ) )
+{
+  cout << "funptr (" << 0.3 << 0.4 << 0.5 << 0.6 << ") = " ; 
+
+  double x ; 
+  x = 0.6; 
+  double arg[3]; 
+  arg[0] = 0.3 ; 
+  arg[1] = 0.4 ; 
+  arg[2] = 0.5; 
+
+  cout << funptr (&x, arg) << endl; 
+  return 0; 
+}
+
+
+int make_pics_from_hist( TH1F_p hist_h, 
+			 const char* outfilename,
+			 const char* title,
+			 const char* xtitle, 
+			 const char* ytitle )
+{
+  TH1F* hist = to_nonconst<TH1F, TH1F_t>(hist_h);
+ 
   TCanvas* c1 = new TCanvas( "mycanvas","mycanvas" ) ; 
 
   c1->cd(1); 
@@ -183,23 +206,5 @@ int plothist_with_fitting( const char* histname,
 
   cout << "Completed! :) " << endl; 
   delete c1; 
-  delete hist; 
-  //  delete title;
-  return 0; 
-}
-
-
-int testfunptr( double funptr( double*, double* ) )
-{
-  cout << "funptr (" << 0.3 << 0.4 << 0.5 << 0.6 << ") = " ; 
-
-  double x ; 
-  x = 0.6; 
-  double arg[3]; 
-  arg[0] = 0.3 ; 
-  arg[1] = 0.4 ; 
-  arg[2] = 0.5; 
-
-  cout << funptr (&x, arg) << endl; 
   return 0; 
 }

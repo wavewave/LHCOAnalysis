@@ -39,4 +39,9 @@ foreign import ccall "makehist.h read_histogram_from_file" c_read_histogram_from
 foreign import ccall "makehist.h write_histogram_to_file" c_write_histogram_to_file
   :: (Ptr RawTH1F) -> CString -> IO () 
      
+foreign import ccall "makehist.h fit_histogram" c_fit_histogram 
+  :: (Ptr RawTH1F) -> CDouble -> CDouble -> Ptr CDouble -> (FunPtr CFunctionPtr) -> IO CInt
      
+foreign import ccall "makehist.h make_pics_from_hist" c_make_pics_from_hist 
+  :: (Ptr RawTH1F) -> CString -> CString -> CString -> CString
+     -> IO CInt

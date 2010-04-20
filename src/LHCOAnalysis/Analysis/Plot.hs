@@ -57,3 +57,12 @@ th1f_fill (TH1F fptr) val
            rptr = unsafeForeignPtrToPtr fptr
 
        c_th1f_fill rptr c_val 
+
+makePicsFromHist (TH1F fptr) outfile hdeco 
+  = do c_outfile <- newCString outfile
+       c_title  <- newCString $ histtitle hdeco
+       c_xtitle <- newCString $ xaxistitle hdeco
+       c_ytitle <- newCString $ yaxistitle hdeco
+       let rptr = unsafeForeignPtrToPtr fptr
+           
+       c_make_pics_from_hist rptr c_outfile c_title c_xtitle c_ytitle

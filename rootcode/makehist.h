@@ -31,13 +31,28 @@ typedef Type ## _t const* const_ ## Type ## _p
 
   int plothist( const char* histname, const char* filename,
 		const char* outfilename,
-	      const char* title,
-	      const char* xtitle, 
-	      const char* ytitle, 
-	      int plotfiletype );
+		const char* title,
+		const char* xtitle, 
+		const char* ytitle, 
+		int plotfiletype );
   
   int testfunptr( double funptr( double*, double* ) );
   
+
+  int fit_histogram( TH1F_p h1, 
+		     double start, 
+		     double end,
+		     double* param,
+		     double funptr( double*, double* )
+		     );
+
+  int make_pics_from_hist( TH1F_p hist_h, 
+			   const char* outfilename,
+			   const char* title,
+			   const char* xtitle, 
+			   const char* ytitle );
+
+
 #ifdef __cplusplus
 }
 #endif
