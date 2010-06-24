@@ -1,5 +1,5 @@
 Name:		LHCOAnalysis
-Version:	0.0
+Version:	0.1
 Synopsis:	LHC Olympics File Analysis Code
 Description: 	LHC Olympics Analysis Code. It can create binary bytestring 
 		file for LHC Olympics format data and analyze it and create 
@@ -9,7 +9,7 @@ License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
 Build-Depends:	base>4, binary, mtl, bytestring, array, containers, vector, 
-		bytestring-lexing, split, directory
+		bytestring-lexing, split, directory,hmatrix, Computation, HROOT
 Build-Type: 	Simple
 
 hs-source-dirs: src
@@ -25,24 +25,24 @@ Exposed-Modules:
 		 LHCOAnalysis.Analysis.Hist, 
 		 LHCOAnalysis.MakeBinary,
 		 LHCOAnalysis.FetchBinary, 
-		 LHCOAnalysis.ROOTApp, 
+--		 LHCOAnalysis.ROOTApp, 
  		 LHCOAnalysis.Batch.Parallel,
 		 LHCOAnalysis.Analysis.Plot, 
 		 LHCOAnalysis.Analysis.Fitting
 		 
 		 
-Extra-source-files: rootcode/makehist.h
+--Extra-source-files: rootcode/makehist.h
 --extra-lib-dirs:  $(ROOTSYS)/lib
 -- /home/wavewave/nfs/root/lib
-extra-libraries: stdc++, New, Core, Cint, 
-		 Graf, Graf3d, Hist, Html, Matrix, Minuit, 
-		 Postscript, Proof, Tree, TreePlayer, Thread,
-		 Gpad, Gui, GX11, X3d
-Extensions:	 ForeignFunctionInterface
+--extra-libraries: stdc++, New, Core, Cint, 
+--		 Graf, Graf3d, Hist, Html, Matrix, Minuit, 
+--		 Postscript, Proof, Tree, TreePlayer, Thread,
+--		 Gpad, Gui, GX11, X3d
+--Extensions:	 ForeignFunctionInterface
 -- Extra-libraries: stdc++
-Include-dirs: 	rootcode
+--Include-dirs: 	rootcode
 --		$(ROOTSYS)/include 
 --		/home/wavewave/nfs/root/include
 
-Install-includes: makehist.h
-C-sources: 	rootcode/makehist.cpp
+--Install-includes: makehist.h
+--C-sources: 	rootcode/makehist.cpp

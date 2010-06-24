@@ -2,14 +2,13 @@
 
 module LHCOAnalysis.Analysis.Plot where
 
-import LHCOAnalysis.ROOTApp
+import HROOT
 
 import System.IO
 import Foreign.C
 import Foreign.C.String
 import Foreign.ForeignPtr
 
-type HistName = String
 
 data PlotFileType = EPSFile | PDFFile
 
@@ -44,11 +43,11 @@ read_histogram_from_file filename histname
        
        
        
-write_histogram_to_file :: TH1F -> FilePath -> IO ()
+{- write_histogram_to_file :: TH1F -> FilePath -> IO ()
 write_histogram_to_file (TH1F fptr) filename 
   = do c_filename <- newCString filename
        let rptr = unsafeForeignPtrToPtr fptr
-       c_write_histogram_to_file rptr c_filename
+       c_write_histogram_to_file rptr c_filename -}
 
 
 th1f_fill :: TH1F -> Double -> IO () 
@@ -57,6 +56,7 @@ th1f_fill (TH1F fptr) val
            rptr = unsafeForeignPtrToPtr fptr
 
        c_th1f_fill rptr c_val 
+       return ()
 
 makePicsFromHist (TH1F fptr) outfile hdeco 
   = do c_outfile <- newCString outfile

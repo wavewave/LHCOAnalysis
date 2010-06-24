@@ -3,13 +3,9 @@
 
 module LHCOAnalysis.FetchBinary where
 
-import LHCOAnalysis.Analysis.CutSets
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.NewAnalysis
-import LHCOAnalysis.Analysis.Hist
 import LHCOAnalysis.Utility
-import LHCOAnalysis.ROOTApp
-
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Binary as Bi

@@ -3,6 +3,8 @@
 
 module LHCOAnalysis.Utility where
 
+import Numeric.LinearAlgebra
+
 -- | FourMomentum is a type synonym of (E,px,py,pz)
 type FourMomentum = (Double,Double,Double,Double) 
  
@@ -73,6 +75,59 @@ invmass0 :: FourMomentum -> FourMomentum -> Double
 invmass0 !mom1 !mom2 = sqrt $! invmasssqr0 mom1 mom2
 
 
---lstprint :: (Show a, Show b) => [(a,b)] -> String                      
---lstprint lst = foldr1 f lst 
---    where f (a,b) str = show a ++ " " ++ show b ++ "\n" ++ str
+-------------------------------------------
+
+type LorentzRotation = Matrix Double
+
+type LorentzVector = Vector Double
+
+fourMomentumToLorentzVector (v0,v1,v2,v3) = 4 |> [v0,v1,v2,v3]
+
+type Vector3 = Vector Double
+
+vector3 :: LorentzVector -> Vector3
+vector3 v = 3 |> [v1,v2,v3]
+    where [v0,v1,v2,v3] = toList v
+
+beta  :: LorentzVector -> Vector3
+beta v = 3 |> [b1,b2,b3]
+    where [v0,v1,v2,v3] = toList v
+          b1 = v1/v0
+          b2 = v2/v0
+          b3 = v3/v0
+
+boost :: Vector3 -> LorentzRotation
+boost b = (4><4) [ ga    , -bx*ga           , -by*ga           , -bz*ga
+                 , -bx*ga, 1+(ga-1)*bx*bx/b2, (ga-1)*bx*by/b2  , (ga-1)*bx*bz/b2
+                 , -by*ga, (ga-1)*by*bx/b2  , 1+(ga-1)*by*by/b2, (ga-1)*by*bz/b2
+                 , -bz*ga, (ga-1)*bz*bx/b2  , (ga-1)*bz*by/b2  , 1+(ga-1)*bz*bz/b2 ]
+    where bx = b @> 0
+          by = b @> 1
+          bz = b @> 2 
+          b2 = bx*bx+by*by+bz*bz
+          ga = 1 / sqrt (1-b2)
+
+
+toRest = boost . beta 
+
+
+cosangle3 :: Vector3 -> Vector3 -> Double
+cosangle3 v1 v2 = v1 <.> v2 / (normv1 * normv2)
+    where normv1 = sqrt $ v1 <.> v1
+          normv2 = sqrt $ v2 <.> v2
+
+cosangle :: LorentzVector -> LorentzVector -> Double
+cosangle v1 v2 = cosangle3 (vector3 v1) (vector3 v2)
+
+data EvenOdd = Even | Odd 
+
+cosTH :: EvenOdd -> LorentzVector -> LorentzVector -> Double 
+cosTH i v1 v2 = let vsum = v1 + v2
+                    torestsum = toRest vsum
+                    restv1 = torestsum <> v1
+                    restv2 = torestsum <> v2
+                    cosTH1 = cosangle vsum restv1
+                    cosTH2 = cosangle vsum restv2 
+                in  case i of 
+                      Even -> cosTH2
+                      Odd  -> cosTH1

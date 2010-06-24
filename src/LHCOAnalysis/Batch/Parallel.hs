@@ -3,9 +3,11 @@
 module LHCOAnalysis.Batch.Parallel where
 
 import LHCOAnalysis.NewAnalysis
-import LHCOAnalysis.ROOTApp
+
 import LHCOAnalysis.Analysis.Hist
 import LHCOAnalysis.FetchBinary
+
+import HROOT
 
 import Data.Array.Unboxed
 
