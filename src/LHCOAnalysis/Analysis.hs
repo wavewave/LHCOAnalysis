@@ -3,8 +3,52 @@
 
 module LHCOAnalysis.Analysis where
 
+import LHCOAnalysis.PhysObj
 import Debug.Trace
+import qualified Data.ListLike as LL 
+import qualified Data.Iteratee as Iter
 
+import HROOT
+
+import Control.Monad
+import Control.Monad.IO.Class
+
+type EventCountIO a = Iter.IterateeG [] (PhyEventClassified) IO a
+
+type EventAnalysisFunc = PhyEventClassified -> Maybe Double
+
+iter_count_total_event :: EventCountIO Int 
+iter_count_total_event = Iter.length
+
+iter_count_marker :: Int -> Int -> EventCountIO ()
+iter_count_marker num start = do 
+  h <- Iter.peek 
+  case h of 
+    Nothing -> return ()
+    Just _ -> if start `mod` num == 0 
+                then do liftIO $ putStrLn (" data : " ++  show start)
+                        iter_count_marker num (start+1)
+                else iter_count_marker num (start+1)
+
+iter_hist1 :: TH1F -> EventAnalysisFunc -> EventCountIO () 
+iter_hist1 hist func = do 
+  h <- Iter.peek
+  case h of 
+    Nothing -> return ()
+    Just x -> do   
+           let fx = func x
+           case fx of
+             Nothing -> do Iter.head 
+                           iter_hist1 hist func
+             Just val -> do liftIO $ do fillTH1F hist val
+                                        -- putStrLn "one event passed"
+                            Iter.head
+                            iter_hist1 hist func
+
+
+ 
+
+{-
 import LHCOAnalysis 
 import LHCOAnalysis.PhysObj
 import LHCOAnalysis.Parse
@@ -133,3 +177,4 @@ sortoutright (Right x) = True
 
 uncoverright (Right x) = x
 
+-}

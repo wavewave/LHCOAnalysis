@@ -4,7 +4,6 @@
 module LHCOAnalysis.FetchBinary where
 
 import LHCOAnalysis.PhysObj
-import LHCOAnalysis.NewAnalysis
 import LHCOAnalysis.Utility
 
 import qualified Data.ByteString.Lazy.Char8 as B
@@ -14,7 +13,7 @@ import System.IO
 import Data.Int
 import Data.Array.Unboxed
 
-import Control.Monad.State.Lazy
+import Control.Monad.Trans.State.Lazy
 import qualified Data.Binary.Get as G
 
 
@@ -42,10 +41,11 @@ readbyte inh = do bytecontent <- B.hGetContents inh
           --        lst <- sequence $ repeat onefetchIO 
          ---         return $ map snd $ takeWhile fst lst 
 
-
+{--
 myread :: (AnalysisTask a) => Handle -> a -> IO (UArray Int Int)
 myread inh !anal = 
     do lst <- readbyte inh
        let result = make_histogram (snd3.histinfo $ anal) (analfunc anal) lst
 
        return result
+--}
