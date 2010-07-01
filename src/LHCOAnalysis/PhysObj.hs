@@ -167,30 +167,30 @@ instance Binary (ECharge) where
   put (CPlus)  = putWord8 1
   put (CMinus) = putWord8 (-1)
   get = do tag <- getWord8
-           return $ case tag of 
-                      1  -> CPlus
-                      -1 -> CMinus
-                      _  -> error "not a ECharge"
+           tag `seq` return $ case tag of 
+                                1  -> CPlus
+                                -1 -> CMinus
+                                _  -> error "not a ECharge"
 
 instance Binary (PhyObj Photon) where
   put (ObjPhoton x) = putWord8 100 >> put x 
   get = do getWord8
            x   <- get
-           return (ObjPhoton x)
+           x `seq` return (ObjPhoton x)
            
 instance Binary (PhyObj Electron) where
   put (ObjElectron x y) = putWord8 101 >> put x >> put y 
-  get = do getWord8
-           x <- get 
-           y <- get 
-           return (ObjElectron x y)
+  get = do {-# SCC "Electron8" #-} getWord8
+           x <- {-# SCC "Electronx" #-} get 
+           y <- {-# SCC "Electrony" #-} get 
+           x `seq` y `seq` return (ObjElectron x y)
 
 instance Binary (PhyObj Muon) where
   put (ObjMuon x y) = putWord8 102 >> put x >> put y 
   get = do getWord8
            x <- get
            y <- get
-           return (ObjMuon x y)
+           x `seq` y `seq` return (ObjMuon x y)
 
 instance Binary (PhyObj Tau) where
   put (ObjTau x y z) = putWord8 103 >> put x >> put y >> put z 
@@ -198,27 +198,27 @@ instance Binary (PhyObj Tau) where
            x <- get 
            y <- get
            z <- get
-           return (ObjTau x y z)
+           x `seq` y `seq` z `seq` return (ObjTau x y z)
 
 instance Binary (PhyObj Jet) where
   put (ObjJet x y) = putWord8 104 >> put x >> put y 
   get = do getWord8
            x <- get 
            y <- get 
-           return (ObjJet x y)
+           x `seq` y `seq` return (ObjJet x y)
 
 instance Binary (PhyObj BJet) where
   put (ObjBJet x y) = putWord8 105 >> put x >> put y 
   get = do getWord8
            x <- get            
            y <- get 
-           return (ObjBJet x y)
+           x `seq` y `seq` return (ObjBJet x y)
 
 instance Binary (PhyObj MET) where
   put (ObjMET x) = putWord8 106 >> put x 
   get = do getWord8
-           x <- get            
-           return (ObjMET x)
+           x <- {-# SCC "MET" #-} get            
+           x `seq` return (ObjMET x)
            
            
 

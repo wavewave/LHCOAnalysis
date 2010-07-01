@@ -19,7 +19,7 @@ makebinary inputfilename outputfilename
 
          contents <- B.hGetContents inh
          let parsed = parsestr contents
-             encodedbs = map Bi.encode parsed
+             encodedbs = (map Bi.encode parsed) :: [B.ByteString]
 
          count <- newIORef (0::Int )
 
