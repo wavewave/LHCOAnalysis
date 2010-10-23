@@ -1,1 +1,0 @@
-cabal install --extra-include-dirs=$ROOTSYS/include --extra-lib-dirs=$ROOTSYS/lib

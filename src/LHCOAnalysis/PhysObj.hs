@@ -3,7 +3,7 @@
 
 module LHCOAnalysis.PhysObj where
 
-import LHCOAnalysis.Utility
+--import LHCOAnalysis.Utility
 
 --import Data.ByteString.Lazy 
 -- import Data.ByteString.Lazy hiding (reverse)
@@ -42,6 +42,37 @@ data ObjTag a where
 
 data TauProng = Prong1 | Prong3
 data ECharge  = CPlus  | CMinus
+
+-- | FourMomentum is a type synonym of (E,px,py,pz)
+type FourMomentum = (Double,Double,Double,Double) 
+
+
+fst3 :: (a,b,c) -> a
+fst3 (a,_,_) = a
+
+snd3 :: (a,b,c) -> b
+snd3 (_,a,_) = a
+
+trd3 :: (a,b,c) -> c
+trd3 (_,_,a) = a 
+
+fourmomfrometaphipt :: (Double,Double,Double) -> FourMomentum
+fourmomfrometaphipt !etaphipt = (p0, p1, p2, p3 )
+  where eta' = fst3 etaphipt 
+        phi' = snd3 etaphipt
+        pt'  = trd3 etaphipt
+        costh = etatocosth eta'
+        sinth = sqrt (1 - costh*costh)
+        p1  = pt' * cos phi' 
+        p2  = pt' * sin phi'
+        p3  = pt' * costh / sinth 
+        p0  = pt' / sinth
+
+
+
+etatocosth :: Double -> Double 
+etatocosth !et =  ( exp (2.0 * et) - 1 ) / (exp (2.0 * et) + 1 )
+
 
 ntrktoecharge :: Double -> ECharge 
 ntrktoecharge ntrk = if ntrk > 0 then CPlus else CMinus

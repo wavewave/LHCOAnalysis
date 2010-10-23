@@ -1,5 +1,5 @@
 Name:		LHCOAnalysis
-Version:	0.2
+Version:	0.3
 Synopsis:	LHC Olympics File Analysis Code
 Description: 	LHC Olympics Analysis Code. It can create binary bytestring 
 		file for LHC Olympics format data and analyze it and create 
@@ -10,8 +10,9 @@ Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
 Build-Depends:	base>4, binary, transformers, bytestring, array, containers, 
 		vector, 
-		bytestring-lexing, split, directory,hmatrix, Computation, HROOT, 
-		ListLike, iteratee
+		bytestring-lexing, split, directory, HROOT, 
+		ListLike, iteratee==0.3.6, hmatrix
+--Computation==0.1, 
 Build-Type: 	Simple
 
 hs-source-dirs: src
@@ -21,9 +22,7 @@ ghc-prof-options: -caf-all -auto-all
 
 Exposed-Modules: 
 		 LHCOAnalysis,
-		 LHCOAnalysis.Analysis, 
-		 LHCOAnalysis.Analysis.CutSets, 
-		 LHCOAnalysis.Utility,
+         	 LHCOAnalysis.Analysis, 
 		 LHCOAnalysis.Parse,
 		 LHCOAnalysis.PhysObj,
 		 LHCOAnalysis.MakeBinary,

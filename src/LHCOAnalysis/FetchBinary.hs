@@ -4,7 +4,7 @@
 module LHCOAnalysis.FetchBinary where
 
 import LHCOAnalysis.PhysObj
-import LHCOAnalysis.Utility
+--import LHCOAnalysis.Utility
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Binary as Bi
