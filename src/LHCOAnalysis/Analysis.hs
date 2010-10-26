@@ -47,5 +47,21 @@ iter_hist1 hist func = do
                             Iter.head
                             iter_hist1 hist func
 
+iter_hist2 :: TH2F -> 
+              (PhyEventClassified -> Maybe (Double,Double)) 
+              -> EventCountIO () 
+iter_hist2 hist func = do 
+  h <- Iter.peek
+  case h of 
+    Nothing -> return ()
+    Just x -> do   
+           let fx = func x
+           case fx of
+             Nothing -> do Iter.head 
+                           iter_hist2 hist func
+             Just val -> do liftIO $ do fill hist val
+                                        -- putStrLn "one event passed"
+                            Iter.head
+                            iter_hist2 hist func
 
  

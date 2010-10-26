@@ -1,19 +1,46 @@
 {-# OPTIONS_GHC -fglasgow-exts  #-}
 {-# LANGUAGE ScopedTypeVariables, BangPatterns #-}
 
-module LHCOAnalysis.PhysObj where
+-- | Module for definitions of detector level physical objects
+module LHCOAnalysis.PhysObj (
+  -- * Individual Physical Object
+  -- | Types for reconstructed physical objects 
+  Photon, Electron, Muon, Tau, Jet, BJet, MET, 
+  
+  -- * Collective Object
+  ObjTag(..), PhyObj(..), MomObj(..), ChargedObj(..), 
+  MultiTrkObj(..), EachObj(..), 
+  
+  -- * Object Properties
+  TauProng(..),
+  ECharge(..),
+  FourMomentum, 
+  fst3,
+  snd3,
+  trd3, 
+  fourmomfrometaphipt, 
+  etatocosth, 
+  ntrktoecharge, 
+  ntrktotauprong, 
+  ptcompare,
+  headsafe, 
+  first_positive, 
+  first_negative, 
+  
+  -- * Event
+  PhyEvent, 
+  PhyEventClassified(..), 
+  zeroevent, 
+  sortPhyEventC, 
+  numofobj
+  
+  
+  ) where
 
---import LHCOAnalysis.Utility
-
---import Data.ByteString.Lazy 
--- import Data.ByteString.Lazy hiding (reverse)
 import Data.Function
 import Data.Binary 
 import Data.List (sortBy)
---  phantom type for the object type
-
---class ObjTag a 
-
+ 
 data Photon 
 data Electron
 data Muon
@@ -22,13 +49,8 @@ data Jet
 data BJet
 data MET           
 
---instance ObjTag Photon
---instance ObjTag Electron
---instance ObjTag Muon
---instance ObjTag Jet
---instance ObjTag BJet
---instance ObjTag MET
 
+-- | GADT type for reconstructed physical objects 
 data ObjTag a where
   Photon   :: ObjTag Photon 
   Electron :: ObjTag Electron 
@@ -132,13 +154,7 @@ first_negative lst = headsafe $ dropWhile (\x->(charge x > 0)) lst
 class MultiTrkObj a where
   numoftrk :: a -> Int
 
-
-
-
-
---  Existential type for heterotic container for different objects.      
-                 
---data EachObj = forall a. (Show (PhyObj a), Binary (PhyObj a)) => EO (PhyObj a)
+-- | Existential type for heterotic container for different objects.      
 data EachObj where
   EO :: (Show (PhyObj a), Binary (PhyObj a)) => PhyObj a -> EachObj
 
