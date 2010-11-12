@@ -184,8 +184,7 @@ leptonlst p = let el = map (\(x,y)->(x,LO_Elec y)) (electronlst p)
               in  ptordering (ml ++ el)
 
 ptordering :: (MomObj a) => [(Int,a)] -> [(Int,a)] 
-ptordering lst = sortBy ((flip compare) `on` ptobj) lst 
-  where ptobj (x,y) = pt y 
+ptordering lst = sortBy ((flip ptcompare) `on` snd) lst 
         
 
 
@@ -212,12 +211,12 @@ sortPhyEventC p = let phl = photonlst p
                       jel = jetlst p 
                       bjl = bjetlst p 
                       met'= met p 
-                      phl' = reverse $ sortBy (ptcompare `on` snd) phl
-                      ell' = reverse $ sortBy (ptcompare `on` snd) ell
-                      mul' = reverse $ sortBy (ptcompare `on` snd) mul
-                      tal' = reverse $ sortBy (ptcompare `on` snd) tal
-                      jel' = reverse $ sortBy (ptcompare `on` snd) jel
-                      bjl' = reverse $ sortBy (ptcompare `on` snd) bjl
+                      phl' = sortBy ((flip ptcompare) `on` snd) phl
+                      ell' = sortBy ((flip ptcompare) `on` snd) ell
+                      mul' = sortBy ((flip ptcompare) `on` snd) mul
+                      tal' = sortBy ((flip ptcompare) `on` snd) tal
+                      jel' = sortBy ((flip ptcompare) `on` snd) jel
+                      bjl' = sortBy ((flip ptcompare) `on` snd) bjl
                   in  PhyEventClassified phl' ell' mul' tal' jel' bjl' met'
 
 -- | num of object in one event
