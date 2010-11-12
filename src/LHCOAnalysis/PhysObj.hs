@@ -160,6 +160,35 @@ class MultiTrkObj a where
 data EachObj where
   EO :: (Show (PhyObj a), Binary (PhyObj a)) => PhyObj a -> EachObj
 
+
+data Lepton12Obj where 
+  LO_Elec :: PhyObj Electron -> Lepton12Obj
+  LO_Muon :: PhyObj Muon     -> Lepton12Obj
+  
+instance MomObj Lepton12Obj where 
+  fourmom (LO_Elec e) = fourmom e
+  fourmom (LO_Muon m) = fourmom m 
+  eta (LO_Elec e) = eta e
+  eta (LO_Muon m) = eta m 
+  phi (LO_Elec e) = phi e
+  phi (LO_Muon m) = phi m 
+  pt (LO_Elec e) = pt e
+  pt (LO_Muon m) = pt m
+  
+  
+  
+  
+leptonlst :: PhyEventClassified -> [(Int,Lepton12Obj)]
+leptonlst p = let el = map (\(x,y)->(x,LO_Elec y)) (electronlst p)
+                  ml = map (\(x,y)->(x,LO_Muon y)) (muonlst p)
+              in  ptordering (ml ++ el)
+
+ptordering :: (MomObj a) => [(Int,a)] -> [(Int,a)] 
+ptordering lst = sortBy ((flip compare) `on` ptobj) lst 
+  where ptobj (x,y) = pt y 
+        
+
+
 type PhyEvent = [(Int,EachObj)] 
 
 data PhyEventClassified = PhyEventClassified 
