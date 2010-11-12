@@ -119,9 +119,11 @@ data PhyObj a where
                  , prongtau    :: !TauProng 
                  } -> PhyObj Tau 
   ObjJet      :: { etaphiptjet :: !(Double, Double, Double)
+                 , mjet        :: !Double
                  , numtrkjet   :: !Int
                  } -> PhyObj Jet
   ObjBJet     :: { etaphiptbjet :: !(Double, Double, Double)
+                 , mbjet        :: !Double
                  , numtrkbjet   :: !Int
                  } -> PhyObj BJet
   ObjMET      :: { phiptmet    :: !(Double,Double)
@@ -248,23 +250,25 @@ instance Binary (PhyObj Tau) where
            x `seq` y `seq` z `seq` return (ObjTau x y z)
 
 instance Binary (PhyObj Jet) where
-  put (ObjJet x y) = putWord8 104 >> put x >> put y 
+  put (ObjJet x y z) = putWord8 104 >> put x >> put y >> put z
   get = do getWord8
            x <- get 
            y <- get 
-           x `seq` y `seq` return (ObjJet x y)
+           z <- get 
+           x `seq` y `seq` z `seq` return (ObjJet x y z)
 
 instance Binary (PhyObj BJet) where
-  put (ObjBJet x y) = putWord8 105 >> put x >> put y 
+  put (ObjBJet x y z) = putWord8 105 >> put x >> put y >> put z
   get = do getWord8
            x <- get            
            y <- get 
-           x `seq` y `seq` return (ObjBJet x y)
+           z <- get 
+           x `seq` y `seq` z `seq` return (ObjBJet x y z)
 
 instance Binary (PhyObj MET) where
   put (ObjMET x) = putWord8 106 >> put x 
   get = do getWord8
-           x <- {-# SCC "MET" #-} get            
+           x <- get            
            x `seq` return (ObjMET x)
            
            
@@ -328,15 +332,6 @@ instance Binary EachObj where
                        return $ EO x
              _   -> error "strange object"
 
-{--
-instance Binary EachObj where
-  put (EO x) = putWord8 200 >> put x 
---  get = getWord8 >> \tag -> get >>= \(x :: (Show (PhyObj a), Binary (PhyObj 
-  get = do tag <- getWord8 
-     -- (x :: (Show (PhyObj a), Binary (PhyObj a)) => PhyObj a) <- get
-           x <- get
-           return $ (EO (x :: (Show (PhyObj a), Binary (PhyObj a)) => PhyObj a) )
---}
 
 instance Show EachObj where
   show (EO x) = show x
@@ -418,14 +413,24 @@ instance MomObj (PhyObj Tau) where
   phi = snd3 . etaphipttau
   pt  = trd3 . etaphipttau
 
+fourmomfrometaphiptm !ma (eta',phi',pt') = (p0, p1, p2, p3 )
+  where costh = etatocosth eta'
+        sinth = sqrt (1 - costh*costh)
+        p1  = pt' * cos phi' 
+        p2  = pt' * sin phi'
+        p3  = pt' * costh / sinth 
+        p0  = sqrt (p1^2 + p2^2 + p3^2 + ma^2) 
+
+
+
 instance MomObj (PhyObj Jet) where
-  fourmom = fourmomfrometaphipt . etaphiptjet
+  fourmom j = fourmomfrometaphiptm (mjet j) (etaphiptjet j)
   eta = fst3 . etaphiptjet
   phi = snd3 . etaphiptjet
   pt  = trd3 . etaphiptjet
 
 instance MomObj (PhyObj BJet) where
-  fourmom = fourmomfrometaphipt . etaphiptbjet
+  fourmom bj = fourmomfrometaphiptm (mbjet bj) (etaphiptbjet bj)
   eta = fst3 . etaphiptbjet
   phi = snd3 . etaphiptbjet
   pt  = trd3 . etaphiptbjet

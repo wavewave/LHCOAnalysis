@@ -103,8 +103,10 @@ mkEachObj typ eta phi pt jmas ntrk btag hadem dum1 dum2
                                  , prongtau      = ntrktotauprong ntrk }
            4 -> if btag == 0.0 
                 then EO $ ObjJet  { etaphiptjet   = (eta,phi,pt)
+                                  , mjet          = jmas
                                   , numtrkjet     = round ntrk }
                 else EO $ ObjBJet { etaphiptbjet  = (eta,phi,pt)
+                                  , mbjet         = jmas
                                   , numtrkbjet    = round ntrk }
            6 -> EO $ ObjMET { phiptmet = (phi,pt) }
            _ -> error "not a predefined type"
@@ -119,9 +121,9 @@ addEachObjtoClassified phyclass (idx,(EO muon@(ObjMuon _ _)))
   = phyclass { muonlst     = (idx,muon) : (muonlst phyclass) }
 addEachObjtoClassified phyclass (idx,(EO tau@(ObjTau _ _ _)))
   = phyclass { taulst      = (idx,tau) : (taulst phyclass) }
-addEachObjtoClassified phyclass (idx,(EO jet@(ObjJet _ _))) 
+addEachObjtoClassified phyclass (idx,(EO jet@(ObjJet _ _ _))) 
   = phyclass { jetlst      = (idx,jet) : (jetlst phyclass) }
-addEachObjtoClassified phyclass (idx,(EO bjet@(ObjBJet _ _)))
+addEachObjtoClassified phyclass (idx,(EO bjet@(ObjBJet _ _ _)))
   = phyclass { bjetlst     = (idx,bjet) : (bjetlst phyclass) }
 addEachObjtoClassified phyclass (idx,(EO met'@(ObjMET _)))  
   = phyclass { met         = met' }

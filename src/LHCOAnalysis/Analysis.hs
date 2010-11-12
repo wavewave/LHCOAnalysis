@@ -13,7 +13,7 @@ import HROOT
 import Control.Monad
 import Control.Monad.IO.Class
 
-type EventCountIO a = Iter.IterateeG [] (PhyEventClassified) IO a
+type EventCountIO a = Iter.Iteratee [PhyEventClassified] IO a
 
 type EventAnalysisFunc = PhyEventClassified -> Maybe Double
 
