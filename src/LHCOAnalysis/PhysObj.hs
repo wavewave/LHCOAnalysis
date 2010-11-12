@@ -156,15 +156,22 @@ first_negative lst = headsafe $ dropWhile (\x->(charge x > 0)) lst
 class MultiTrkObj a where
   numoftrk :: a -> Int
 
--- | Existential type for heterotic container for different objects.      
+-- | Heterotic container for all the PhyObj
 data EachObj where
   EO :: (Show (PhyObj a), Binary (PhyObj a)) => PhyObj a -> EachObj
 
 
+-- | Heterotic container for 1st and 2nd gen charged leptons. 
 data Lepton12Obj where 
   LO_Elec :: PhyObj Electron -> Lepton12Obj
   LO_Muon :: PhyObj Muon     -> Lepton12Obj
   
+
+-- | Heterotic container for jet and bjet. 
+data JetBJetObj where
+  JO_Jet  :: PhyObj Jet  -> JetBJetObj 
+  JO_BJet :: PhyObj BJet -> JetBJetObj
+
 instance MomObj Lepton12Obj where 
   fourmom (LO_Elec e) = fourmom e
   fourmom (LO_Muon m) = fourmom m 
@@ -175,7 +182,18 @@ instance MomObj Lepton12Obj where
   pt (LO_Elec e) = pt e
   pt (LO_Muon m) = pt m
   
+instance MomObj JetBJetObj where 
+  fourmom (JO_Jet j) = fourmom j
+  fourmom (JO_BJet b) = fourmom b 
+  eta (JO_Jet  j) = eta j
+  eta (JO_BJet b) = eta b 
+  phi (JO_Jet  j) = phi j
+  phi (JO_BJet b) = phi b 
+  pt  (JO_Jet  j) = pt  j
+  pt  (JO_BJet b) = pt  b
   
+
+
   
   
 leptonlst :: PhyEventClassified -> [(Int,Lepton12Obj)]
@@ -183,9 +201,18 @@ leptonlst p = let el = map (\(x,y)->(x,LO_Elec y)) (electronlst p)
                   ml = map (\(x,y)->(x,LO_Muon y)) (muonlst p)
               in  ptordering (ml ++ el)
 
+jetOrBJetLst :: PhyEventClassified -> [(Int,JetBJetObj)]
+jetOrBJetLst p = let jl = map (\(x,y)->(x,JO_Jet y)) (jetlst p)
+                     bl = map (\(x,y)->(x,JO_BJet y)) (bjetlst p)
+              in  ptordering (jl ++ bl)
+
+
 ptordering :: (MomObj a) => [(Int,a)] -> [(Int,a)] 
 ptordering lst = sortBy ((flip ptcompare) `on` snd) lst 
         
+
+
+
 
 
 type PhyEvent = [(Int,EachObj)] 
