@@ -9,7 +9,8 @@ module LHCOAnalysis.PhysObj (
   
   -- * Collective Object
   ObjTag(..), PhyObj(..), MomObj(..), ChargedObj(..), 
-  MultiTrkObj(..), EachObj(..), 
+  MultiTrkObj(..), EachObj(..), Lepton12Obj(..), 
+  JetBJetObj(..),
   
   -- * Object Properties
   TauProng(..),
@@ -23,6 +24,7 @@ module LHCOAnalysis.PhysObj (
   ntrktoecharge, 
   ntrktotauprong, 
   ptcompare,
+  ptordering,
   headsafe, 
   first_positive, 
   first_negative, 
@@ -32,7 +34,10 @@ module LHCOAnalysis.PhysObj (
   PhyEventClassified(..), 
   zeroevent, 
   sortPhyEventC, 
-  numofobj
+  numofobj,
+  leptonlst, 
+  jetOrBJetLst
+
   
   
   ) where
@@ -205,6 +210,7 @@ jetOrBJetLst :: PhyEventClassified -> [(Int,JetBJetObj)]
 jetOrBJetLst p = let jl = map (\(x,y)->(x,JO_Jet y)) (jetlst p)
                      bl = map (\(x,y)->(x,JO_BJet y)) (bjetlst p)
               in  ptordering (jl ++ bl)
+
 
 
 ptordering :: (MomObj a) => [(Int,a)] -> [(Int,a)] 
