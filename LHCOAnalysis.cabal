@@ -1,5 +1,5 @@
 Name:		LHCOAnalysis
-Version:	0.4.2
+Version:	0.4.3
 Synopsis:	LHC Olympics File Analysis Code
 Description: 	LHC Olympics Analysis Code. It can create binary bytestring 
 		file for LHC Olympics format data and analyze it and create 
