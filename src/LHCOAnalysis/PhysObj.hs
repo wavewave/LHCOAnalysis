@@ -20,6 +20,7 @@ module LHCOAnalysis.PhysObj (
   snd3,
   trd3, 
   fourmomfrometaphipt, 
+  takeEtaPhiPT,
   etatocosth, 
   ntrktoecharge, 
   ntrktotauprong, 
