@@ -199,7 +199,8 @@ instance MomObj JetBJetObj where
   
 
 
-  
+takeEtaPhiPT :: (MomObj a) => a -> (Double,Double,Double) 
+takeEtaPhiPT p = (eta p, phi p, pt p)
   
 leptonlst :: PhyEventClassified -> [(Int,Lepton12Obj)]
 leptonlst p = let el = map (\(x,y)->(x,LO_Elec y)) (electronlst p)
@@ -224,7 +225,8 @@ ptordering lst = sortBy ((flip ptcompare) `on` snd) lst
 type PhyEvent = [(Int,EachObj)] 
 
 data PhyEventClassified = PhyEventClassified 
-                         { photonlst   :: ![(Int,(PhyObj Photon))], 
+                         { eventid     :: !Int,
+                           photonlst   :: ![(Int,(PhyObj Photon))], 
                            electronlst :: ![(Int,(PhyObj Electron))],
                            muonlst     :: ![(Int,(PhyObj Muon))], 
                            taulst      :: ![(Int,(PhyObj Tau))], 
@@ -233,11 +235,12 @@ data PhyEventClassified = PhyEventClassified
                            met         :: !(PhyObj MET) }
 
 zeroevent :: PhyEventClassified
-zeroevent = PhyEventClassified [] [] [] [] [] [] (ObjMET (0,0))
+zeroevent = PhyEventClassified (-1) [] [] [] [] [] [] (ObjMET (0,0))
 
 -- | sort PhysEventClassfied with PT ordering
 sortPhyEventC :: PhyEventClassified -> PhyEventClassified
-sortPhyEventC p = let phl = photonlst p 
+sortPhyEventC p = let eid = eventid p 
+                      phl = photonlst p 
                       ell = electronlst p 
                       mul = muonlst p 
                       tal = taulst p 
@@ -250,7 +253,7 @@ sortPhyEventC p = let phl = photonlst p
                       tal' = sortBy ((flip ptcompare) `on` snd) tal
                       jel' = sortBy ((flip ptcompare) `on` snd) jel
                       bjl' = sortBy ((flip ptcompare) `on` snd) bjl
-                  in  PhyEventClassified phl' ell' mul' tal' jel' bjl' met'
+                  in  PhyEventClassified eid phl' ell' mul' tal' jel' bjl' met'
 
 -- | num of object in one event
 numofobj :: ObjTag a -> PhyEventClassified -> Int 
@@ -398,7 +401,8 @@ instance Show EachObj where
   show (EO x) = show x
 
 instance Binary PhyEventClassified where
-  put x = putWord8 300 >> put (photonlst x)
+  put x = putWord8 300 >> put (eventid x)
+                       >> put (photonlst x)
                        >> put (electronlst x)
                        >> put (muonlst x)
                        >> put (taulst x )
@@ -406,6 +410,7 @@ instance Binary PhyEventClassified where
                        >> put (bjetlst x)
                        >> put (met x)
   get = do getWord8 
+           xid <- get
            x0 <- get 
            x1 <- get
            x2 <- get 
@@ -413,10 +418,11 @@ instance Binary PhyEventClassified where
            x4 <- get
            x5 <- get
            x6 <- get
-           return $ PhyEventClassified x0 x1 x2 x3 x4 x5 x6
+           return $ PhyEventClassified xid x0 x1 x2 x3 x4 x5 x6
 
 instance Show PhyEventClassified where
-  show (PhyEventClassified x0 x1 x2 x3 x4 x5 x6) = 
+  show (PhyEventClassified xid x0 x1 x2 x3 x4 x5 x6) = 
+    show xid ++ 
     show x0 ++ show x1 ++ show x2 ++ show x3 ++ show x4 ++ show x5 ++ show x6
 
 

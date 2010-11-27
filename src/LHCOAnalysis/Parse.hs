@@ -10,10 +10,14 @@ import Data.ByteString.Lex.Lazy.Double
 import Data.ByteString.Internal  
 import qualified Data.ByteString.Lazy.Char8 as B
 
+import Debug.Trace
+
 
 data Parsed = Comment B.ByteString | Zero Int | Nonzero (Int,EachObj) | Strange
               deriving (Show)
 
+
+type Merged = Parsed
 
 parsestr :: B.ByteString -> [PhyEventClassified]
 parsestr str1 = 
@@ -21,11 +25,28 @@ parsestr str1 =
         parsed = map classify_line strlines
         commentfiltered = filter (not.isComment) parsed
         strangefiltered = filter (not.isStrange) commentfiltered
-        splitted  = SP.splitWhen isZero strangefiltered 
-        againfiltered = filter (not.null) splitted
-        unnonzeroed = map (map unNonzero) againfiltered
+        splitted  = tail $ SP.split (SP.whenElt isZero) strangefiltered
+       
+        splitted' = mergeZeroParsed $ splitted 
+                
+        unnonzeroed = map unnonzeroaction splitted'
+                      
+        unnonzeroaction (x,xs) = (x, map unNonzero xs)
+                      
         classified  = map constructPhysObjClass unnonzeroed 
     in  classified 
+
+
+
+
+
+mergeZeroParsed :: [[Parsed]] -> [(Int,[Parsed])]
+mergeZeroParsed [] = []
+mergeZeroParsed (x0:x1:xs) = mergeZero x0 x1 : mergeZeroParsed xs
+
+mergeZero [Zero evnum] x1 = (evnum,x1) 
+
+--mergeZero x0 x1 = x1
 
 isComment :: Parsed -> Bool 
 isComment (Comment _) = True
@@ -43,9 +64,9 @@ unNonzero :: Parsed -> (Int, EachObj)
 unNonzero (Nonzero x) = x
 unNonzero _ = undefined
 
-constructPhysObjClass :: [(Int, EachObj)] -> PhyEventClassified
-constructPhysObjClass lst = 
-    let classified = foldl addEachObjtoClassified zeroevent lst
+constructPhysObjClass :: (Int,[(Int, EachObj)]) -> PhyEventClassified
+constructPhysObjClass (xid,lst) = 
+    let classified = foldl addEachObjtoClassified (zeroevent {eventid = xid}) lst
         sortedclassified = sortPhyEventC classified 
     in  sortedclassified
 
