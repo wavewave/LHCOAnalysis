@@ -21,6 +21,7 @@ module LHCOAnalysis.PhysObj (
   trd3, 
   fourmomfrometaphipt, 
   takeEtaPhiPT,
+  pxpyFromPhiPT,
   etatocosth, 
   ntrktoecharge, 
   ntrktotauprong, 
@@ -203,6 +204,10 @@ instance MomObj JetBJetObj where
 takeEtaPhiPT :: (MomObj a) => a -> (Double,Double,Double) 
 takeEtaPhiPT p = (eta p, phi p, pt p)
   
+pxpyFromPhiPT :: (Double,Double) -> (Double,Double) 
+pxpyFromPhiPT (phi',pt') = (pt' * cos phi' , pt' * sin phi' ) 
+
+
 leptonlst :: PhyEventClassified -> [(Int,Lepton12Obj)]
 leptonlst p = let el = map (\(x,y)->(x,LO_Elec y)) (electronlst p)
                   ml = map (\(x,y)->(x,LO_Muon y)) (muonlst p)
