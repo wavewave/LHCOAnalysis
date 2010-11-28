@@ -20,7 +20,7 @@ module LHCOAnalysis.PhysObj (
   snd3,
   trd3, 
   fourmomfrometaphipt, 
-  takeEtaPhiPT,
+  fourmomfrometaphiptm_new,
   pxpyFromPhiPT,
   etatocosth, 
   ntrktoecharge, 
@@ -39,8 +39,9 @@ module LHCOAnalysis.PhysObj (
   sortPhyEventC, 
   numofobj,
   leptonlst, 
-  jetOrBJetLst
-
+  jetOrBJetLst, 
+  etaphipt, 
+  etaphiptm
   
   
   ) where
@@ -143,7 +144,8 @@ class MomObj a where
   eta     :: a -> Double
   phi     :: a -> Double
   pt      :: a -> Double
-
+  mass    :: a -> Double 
+  
 ptcompare :: MomObj a => a -> a -> Ordering
 ptcompare x y = compare (pt x) (pt y)
 
@@ -202,8 +204,6 @@ instance MomObj JetBJetObj where
   
 
 
-takeEtaPhiPT :: (MomObj a) => a -> (Double,Double,Double) 
-takeEtaPhiPT p = (eta p, phi p, pt p)
   
 pxpyFromPhiPT :: (Double,Double) -> (Double,Double) 
 pxpyFromPhiPT (phi',pt') = (pt' * cos phi' , pt' * sin phi' ) 
@@ -487,24 +487,51 @@ instance MomObj (PhyObj Photon) where
   eta = fst3 . etaphiptphoton   
   phi = snd3 . etaphiptphoton
   pt  = trd3 . etaphiptphoton
+  mass = const 0.0
   
 instance MomObj (PhyObj Electron) where
   fourmom = fourmomfrometaphipt . etaphiptelectron
   eta = fst3 . etaphiptelectron
   phi = snd3 . etaphiptelectron
   pt  = trd3 . etaphiptelectron
+  mass = const 0.0 
   
 instance MomObj (PhyObj Muon) where
   fourmom = fourmomfrometaphipt . etaphiptmuon
   eta = fst3 . etaphiptmuon
   phi = snd3 . etaphiptmuon
   pt  = trd3 . etaphiptmuon
+  mass = const 0.0 
   
 instance MomObj (PhyObj Tau) where
   fourmom = fourmomfrometaphipt . etaphipttau
   eta = fst3 . etaphipttau
   phi = snd3 . etaphipttau
   pt  = trd3 . etaphipttau
+  mass = const 0.0
+
+
+instance MomObj (PhyObj Jet) where
+  fourmom j = fourmomfrometaphiptm (mjet j) (etaphiptjet j)
+  eta = fst3 . etaphiptjet
+  phi = snd3 . etaphiptjet
+  pt  = trd3 . etaphiptjet
+  mass = mjet
+  
+instance MomObj (PhyObj BJet) where
+  fourmom bj = fourmomfrometaphiptm (mbjet bj) (etaphiptbjet bj)
+  eta = fst3 . etaphiptbjet
+  phi = snd3 . etaphiptbjet
+  pt  = trd3 . etaphiptbjet
+  mass = mbjet 
+  
+  
+etaphipt :: (MomObj a) =>  a -> (Double,Double,Double)
+etaphipt p = (eta p, phi p, pt p) 
+
+etaphiptm :: (MomObj a) => a -> (Double,Double,Double,Double) 
+etaphiptm  p = (eta p, phi p, pt p, mass p) 
+
 
 fourmomfrometaphiptm !ma (eta',phi',pt') = (p0, p1, p2, p3 )
   where costh = etatocosth eta'
@@ -514,19 +541,4 @@ fourmomfrometaphiptm !ma (eta',phi',pt') = (p0, p1, p2, p3 )
         p3  = pt' * costh / sinth 
         p0  = sqrt (p1^2 + p2^2 + p3^2 + ma^2) 
 
-
-
-instance MomObj (PhyObj Jet) where
-  fourmom j = fourmomfrometaphiptm (mjet j) (etaphiptjet j)
-  eta = fst3 . etaphiptjet
-  phi = snd3 . etaphiptjet
-  pt  = trd3 . etaphiptjet
-
-instance MomObj (PhyObj BJet) where
-  fourmom bj = fourmomfrometaphiptm (mbjet bj) (etaphiptbjet bj)
-  eta = fst3 . etaphiptbjet
-  phi = snd3 . etaphiptbjet
-  pt  = trd3 . etaphiptbjet
-
-  
-  
+fourmomfrometaphiptm_new (eta',phi',pt',ma) = fourmomfrometaphiptm ma (eta',phi',pt')
