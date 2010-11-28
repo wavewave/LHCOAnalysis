@@ -30,7 +30,8 @@ module LHCOAnalysis.PhysObj (
   headsafe, 
   first_positive, 
   first_negative, 
-  
+  prettyprint, 
+  prettyprintevent,
   -- * Event
   PhyEvent, 
   PhyEventClassified(..), 
@@ -342,6 +343,25 @@ instance Binary (PhyObj MET) where
            x `seq` return (ObjMET x)
            
            
+prettyprint :: PhyObj a -> String
+prettyprint (ObjPhoton x) = "photon:" ++ show x 
+prettyprint (ObjElectron x _) = "electron:" ++ show x 
+prettyprint (ObjMuon x _) = "muon:" ++ show x 
+prettyprint (ObjTau x _ _) = "tau:" ++ show x 
+prettyprint (ObjJet x _ _) = "jet:" ++ show x 
+prettyprint (ObjBJet x _ _) = "bjet:" ++ show x
+prettyprint (ObjMET x) = "met:"++ show x
+  
+prettyprintevent :: PhyEventClassified -> String 
+prettyprintevent p = "event " ++ show (eventid p) ++ "\n"
+                     ++ printeach (photonlst p) ++ "\n"
+                     ++ printeach (electronlst p) ++ "\n"
+                     ++ printeach (muonlst p) ++ "\n"
+                     ++ printeach (taulst p) ++ "\n"
+                     ++ printeach (jetlst p) ++ "\n"
+                     ++ printeach (bjetlst p) ++ "\n"
+                     ++ prettyprint (met p) ++ "\n"
+  where printeach = concatMap (\(x,y)->("(" ++ show x ++ "," ++ prettyprint y ++ ")")) 
 
 instance Show (PhyObj Photon) where
   show _ = "(photon)"
