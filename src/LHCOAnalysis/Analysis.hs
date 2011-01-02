@@ -8,7 +8,7 @@ import Debug.Trace
 import qualified Data.ListLike as LL 
 import qualified Data.Iteratee as Iter
 
-import HROOT
+-- import HROOT
 
 import Control.Monad
 import Control.Monad.IO.Class
@@ -32,6 +32,24 @@ iter_count_marker num start = do
                 else do Iter.head
                         iter_count_marker num (start+1)
 
+
+iter_io :: (a -> IO ()) -> (PhyEventClassified -> Maybe a) -> EventCountIO ()  
+iter_io action func = do 
+  h <- Iter.peek 
+  case h of 
+    Nothing -> return () 
+    Just x -> do 
+      let fx = func x 
+      case fx of 
+        Nothing  -> do Iter.head
+                       iter_io action func
+        Just val -> do liftIO $ action val 
+                       Iter.head   
+                       iter_io action func
+          
+          
+
+{-
 iter_hist1 :: TH1F -> EventAnalysisFunc -> EventCountIO () 
 iter_hist1 hist func = do 
   h <- Iter.peek
@@ -63,5 +81,5 @@ iter_hist2 hist func = do
                                         -- putStrLn "one event passed"
                             Iter.head
                             iter_hist2 hist func
-
+-}
  
