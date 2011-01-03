@@ -448,7 +448,7 @@ instance Binary PhyEventClassified where
 
 instance Show PhyEventClassified where
   show (PhyEventClassified xid x0 x1 x2 x3 x4 x5 x6) = 
-    show xid ++ 
+    "id :" ++ show xid ++ ":" ++  
     show x0 ++ show x1 ++ show x2 ++ show x3 ++ show x4 ++ show x5 ++ show x6
 
 
