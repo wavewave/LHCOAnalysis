@@ -86,8 +86,9 @@ classify_line bstr = let trimmed = B.dropWhile (isSpaceChar8) bstr
 parse_zero :: B.ByteString -> Parsed
 parse_zero bstr = let bstrlst = B.split ' ' bstr
                       _:a2:[] = take 2 $ filter (not . B.null) bstrlst
-                      b2 = maybe 0 fst $ B.readInt a2
-                  in  Zero b2
+                      b2 = trace ("a2 = " ++ show a2) $ maybe 0 fst $ B.readInt a2
+                      
+                  in  trace ("b2 = " ++ show b2 ) $ Zero b2
 
 
 parse_nonzero :: B.ByteString -> Parsed

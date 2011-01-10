@@ -182,6 +182,10 @@ data JetBJetObj where
   JO_Jet  :: PhyObj Jet  -> JetBJetObj 
   JO_BJet :: PhyObj BJet -> JetBJetObj
 
+instance ChargedObj Lepton12Obj where
+  charge (LO_Elec e) = charge e
+  charge (LO_Muon m) = charge m
+
 instance MomObj Lepton12Obj where 
   fourmom (LO_Elec e) = fourmom e
   fourmom (LO_Muon m) = fourmom m 
