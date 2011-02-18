@@ -1,10 +1,10 @@
 Name:		LHCOAnalysis
-Version:	0.4.4.3
+Version:	0.4.4.1
 Synopsis:	LHC Olympics File Analysis Code
 Description: 	LHC Olympics Analysis Code. It can create binary bytestring 
 		file for LHC Olympics format data and analyze it and create 
 		histograms with predefined cut sets. 
-License: 	BSD3
+License: 	GPL-3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
