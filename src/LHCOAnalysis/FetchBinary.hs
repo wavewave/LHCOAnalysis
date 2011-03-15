@@ -1,5 +1,6 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
+             FlexibleInstances, TypeFamilies #-}
+
 
 module LHCOAnalysis.FetchBinary where
 

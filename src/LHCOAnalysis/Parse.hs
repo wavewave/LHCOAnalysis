@@ -1,4 +1,5 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
+             FlexibleInstances, TypeFamilies #-}
 
 module LHCOAnalysis.Parse where
 

@@ -1,5 +1,5 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
+             FlexibleInstances, TypeFamilies,  NoMonomorphismRestriction #-}
 
 module LHCOAnalysis.Analysis where
 

@@ -1,5 +1,5 @@
-{-# OPTIONS_GHC -fglasgow-exts  #-}
-{-# LANGUAGE ScopedTypeVariables, BangPatterns #-}
+{-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
+             FlexibleInstances, TypeFamilies #-}
 
 -- | Module for definitions of detector level physical objects
 module LHCOAnalysis.PhysObj (
@@ -365,7 +365,8 @@ prettyprintevent p = "event " ++ show (eventid p) ++ "\n"
                      ++ printeach (jetlst p) ++ "\n"
                      ++ printeach (bjetlst p) ++ "\n"
                      ++ prettyprint (met p) ++ "\n"
-  where printeach = concatMap (\(x,y)->("(" ++ show x ++ "," ++ prettyprint y ++ ")")) 
+  where printeach :: forall a. [(Int, PhyObj a)] -> String
+        printeach = concatMap (\(x,y)->("(" ++ show x ++ "," ++ prettyprint y ++ ")")) 
 
 instance Show (PhyObj Photon) where
   show _ = "(photon)"
