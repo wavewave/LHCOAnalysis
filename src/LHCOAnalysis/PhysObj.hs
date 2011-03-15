@@ -1,5 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
-             FlexibleInstances, TypeFamilies #-}
+             FlexibleInstances, TypeFamilies, EmptyDataDecls #-}
 
 -- | Module for definitions of detector level physical objects
 module LHCOAnalysis.PhysObj (
