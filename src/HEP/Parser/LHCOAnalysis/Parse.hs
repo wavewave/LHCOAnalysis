@@ -1,9 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
              FlexibleInstances, TypeFamilies #-}
 
-module LHCOAnalysis.Parse where
+module HEP.Parser.LHCOAnalysis.Parse where
 
-import LHCOAnalysis.PhysObj
+import HEP.Parser.LHCOAnalysis.PhysObj
 
 import qualified Data.List.Split as SP
 

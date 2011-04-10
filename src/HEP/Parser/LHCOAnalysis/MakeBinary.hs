@@ -1,12 +1,10 @@
-module LHCOAnalysis.MakeBinary where
+module HEP.Parser.LHCOAnalysis.MakeBinary where
 
-import LHCOAnalysis.Parse
+import HEP.Parser.LHCOAnalysis.Parse
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Binary as Bi
 import System.IO
-
-
 
 import Data.IORef
 

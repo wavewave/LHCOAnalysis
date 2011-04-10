@@ -2,10 +2,9 @@
              FlexibleInstances, TypeFamilies #-}
 
 
-module LHCOAnalysis.FetchBinary where
+module HEP.Parser.LHCOAnalysis.FetchBinary where
 
-import LHCOAnalysis.PhysObj
---import LHCOAnalysis.Utility
+import HEP.Parser.LHCOAnalysis.PhysObj
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Binary as Bi

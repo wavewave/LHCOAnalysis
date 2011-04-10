@@ -1,9 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
              FlexibleInstances, TypeFamilies,  NoMonomorphismRestriction #-}
 
-module LHCOAnalysis.Analysis where
+module HEP.Parser.LHCOAnalysis.Analysis where
 
-import LHCOAnalysis.PhysObj
+import HEP.Parser.LHCOAnalysis.PhysObj
 import Debug.Trace
 import qualified Data.ListLike as LL 
 import qualified Data.Iteratee as Iter
