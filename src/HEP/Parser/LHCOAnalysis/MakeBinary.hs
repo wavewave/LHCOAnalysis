@@ -8,7 +8,7 @@ import System.IO
 
 import Data.IORef
 
-makebinary :: String -> String -> IO ()
+makebinary :: FilePath -> FilePath -> IO ()
 makebinary inputfilename outputfilename 
     = do putStrLn inputfilename
          putStrLn $ "output  = " ++ outputfilename
