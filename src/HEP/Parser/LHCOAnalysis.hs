@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fglasgow-exts -XUndecidableInstances -XOverlappingInstances #-}
-
 module HEP.Parser.LHCOAnalysis (
     module HEP.Parser.LHCOAnalysis.Analysis,
     module HEP.Parser.LHCOAnalysis.Parse,

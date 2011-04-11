@@ -16,6 +16,8 @@ import Data.Array.Unboxed
 import Control.Monad.Trans.State
 import qualified Data.Binary.Get as G
 
+import qualified Data.ListLike as LL 
+import qualified Data.Iteratee as Iter 
 
 
 onefetch :: (Bi.Binary a) => Bi.Get (Bool,a)
@@ -37,3 +39,6 @@ readbyte inh = do bytecontent <- B.hGetContents inh
                   let listfetchNonIO = sequence $ repeat onefetchNonIO
                       lst = evalState listfetchNonIO (0,bytecontent)
                   return $ map snd $ takeWhile fst lst 
+
+
+
