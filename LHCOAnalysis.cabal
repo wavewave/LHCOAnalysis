@@ -9,20 +9,20 @@ License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
 Build-Depends:	base>4, 
-		binary, 
-		transformers, 
+		-- binary, 
+		-- transformers, 
 		bytestring, 
-		array, 
-		containers, 
-		vector, 
+		-- array, 
+		-- containers, 
+		-- vector, 
 		mtl > 2, 
 		bytestring-lexing, 
 		split, 
-		directory,  
-		ListLike, 
-		iteratee>0.4,  
-		iteratee-util > 0.0.2,
-                hmatrix>=0.12.0.2, 
+		-- directory,  
+		-- ListLike, 
+		-- iteratee>0.4,  
+		-- iteratee-util > 0.0.2,
+                -- hmatrix>=0.12.0.2, 
 		LHCOAnalysis-type
 Build-Type: 	Simple
 
@@ -33,10 +33,10 @@ ghc-prof-options: -caf-all -auto-all
 
 Exposed-Modules: 
 		 HEP.Parser.LHCOAnalysis,
-         	 HEP.Parser.LHCOAnalysis.Analysis, 
-		 HEP.Parser.LHCOAnalysis.Parse,
-		 HEP.Parser.LHCOAnalysis.MakeBinary,
-		 HEP.Parser.LHCOAnalysis.FetchBinary,
-                 HEP.Parser.LHCOAnalysis.Cuts 
+         	 -- HEP.Parser.LHCOAnalysis.Analysis, 
+		 HEP.Parser.LHCOAnalysis.Parse
+		 -- HEP.Parser.LHCOAnalysis.MakeBinary,
+		 -- HEP.Parser.LHCOAnalysis.FetchBinary,
+                 -- HEP.Parser.LHCOAnalysis.Cuts 
 		 
 		 
