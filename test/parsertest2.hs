@@ -5,11 +5,16 @@ import Control.Applicative
 import Control.Monad
 import qualified Data.ByteString.Lazy.Char8 as LB
 import Data.Function (on)
-import Data.List
+import Data.List hiding (delete)
 import Data.Maybe
 -- 
 import HEP.Parser.LHCOAnalysis.PhysObj
 import HEP.Parser.LHCOAnalysis.Parse
+import HEP.Util.Functions (invmass)
+import HROOT.Core
+import HROOT.Hist 
+import HROOT.Graf
+import HROOT.IO
 -- 
 import Debug.Trace
 
@@ -261,8 +266,16 @@ isMultiLep4 _ = False
   
   
 
+hardestJetNLep :: PhyEventClassified -> Maybe (PhyObj Jet, Lepton12Obj) 
+hardestJetNLep ev@(PhyEventClassified {..}) = do
+  guard ((not.null) jetlst) 
+  let leplst = leptonlst ev
+  guard ((not.null) leplst) 
+  return ((snd.head) jetlst,(snd.head) leplst)
+ 
+
 main = do 
-  putStrLn "parsing test"
+  putStrLn "invariantmass"
   let fn = "ADMXQLD311MST100.0MG300.0MSQ50000.0_gluinopair_stopdecayfull_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz" -- "ADMXQLD311MST1500.0_stoppair_full_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz"
  
   bstr <- LB.readFile fn 
@@ -270,8 +283,32 @@ main = do
 
       evts = parsestr unzipped
       signalevts = map (preselect HardLepton . taubjetMerge) evts 
+
+      jl = map hardestJetNLep signalevts
+
+  tcanvas <- newTCanvas  "Test" "Test" 640 480 
+  h1 <- newTH1D "test" "test" 100 0 1000 
+  
+  let deposit = fill1 h1 . (invmass <$> fourmom.fst <*> fourmom.snd)
+  mapM_ deposit (catMaybes jl)
+  draw h1 "" 
+  
+  tfile <- newTFile "test.root" "NEW" "" 1   
+  write h1 "" 0 0 
+  close tfile ""
+
+
+  -- saveAs tcanvas "test1.pdf" "" 
+
+  delete h1
+  delete tcanvas
+
+
+
+  -- print $ (take 3 . map (invmass <$> fourmom.fst <*> fourmom.snd)) $ catMaybes jl
   -- print $ map meff signalevts
-      classified = mapMaybe classifyEvent signalevts 
+  
+{-      classified = mapMaybe classifyEvent signalevts 
   -- print (length evts) 
   putStrLn fn 
   putStrLn $ "total number = " ++ show (length evts)
@@ -284,4 +321,4 @@ main = do
     
   -- LB.putStrLn (LB.take 100 unzipped) 
 
-
+-}
