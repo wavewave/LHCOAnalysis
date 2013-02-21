@@ -7,6 +7,8 @@ import qualified Data.ByteString.Lazy.Char8 as LB
 import Data.Function (on)
 import Data.List hiding (delete)
 import Data.Maybe
+import System.Environment
+import System.FilePath
 -- 
 import HEP.Parser.LHCOAnalysis.PhysObj
 import HEP.Parser.LHCOAnalysis.Parse
@@ -276,7 +278,11 @@ hardestJetNLep ev@(PhyEventClassified {..}) = do
 
 main = do 
   putStrLn "invariantmass"
-  let fn = "ADMXQLD311MST100.0MG300.0MSQ50000.0_gluinopair_stopdecayfull_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz" -- "ADMXQLD311MST1500.0_stoppair_full_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz"
+  args <- getArgs
+  when (length args /= 1) $ error "./parsertest2 filename"
+  let fn = args !! 0 
+      basename = takeBaseName fn 
+  -- "ADMXQLD311MST400.0MG900.0MSQ50000.0_gluinopair_stopdecayfull_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz" -- "ADMXQLD311MST1500.0_stoppair_full_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz"
  
   bstr <- LB.readFile fn 
   let unzipped = decompress bstr 
@@ -287,18 +293,17 @@ main = do
       jl = map hardestJetNLep signalevts
 
   tcanvas <- newTCanvas  "Test" "Test" 640 480 
-  h1 <- newTH1D "test" "test" 100 0 1000 
+  h1 <- newTH1D "test" "test" 100 0 2000 
   
   let deposit = fill1 h1 . (invmass <$> fourmom.fst <*> fourmom.snd)
   mapM_ deposit (catMaybes jl)
   draw h1 "" 
   
-  tfile <- newTFile "test.root" "NEW" "" 1   
-  write h1 "" 0 0 
-  close tfile ""
-
-
-  -- saveAs tcanvas "test1.pdf" "" 
+  -- tfile <- newTFile "test.root" "NEW" "" 1   
+  -- write h1 "" 0 0 
+  -- close tfile ""
+  saveAs tcanvas (basename <.> "pdf") "" 
+  saveAs tcanvas (basename <.> "png") ""
 
   delete h1
   delete tcanvas

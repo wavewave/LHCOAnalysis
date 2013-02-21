@@ -7,6 +7,8 @@ import qualified Data.ByteString.Lazy.Char8 as LB
 import Data.Function (on)
 import Data.List
 import Data.Maybe
+import System.FilePath
+import System.Environment
 -- 
 import HEP.Parser.LHCOAnalysis.PhysObj
 import HEP.Parser.LHCOAnalysis.Parse
@@ -262,8 +264,11 @@ isMultiLep4 _ = False
   
 
 main = do 
-  putStrLn "parsing test"
-  let fn = "ADMXQLD311MST100.0MG300.0MSQ50000.0_gluinopair_stopdecayfull_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz" -- "ADMXQLD311MST1500.0_stoppair_full_LHC7ATLAS_NoMatch_NoCut_Cone0.4_Set1_pgs_events.lhco.gz"
+  putStrLn "atlas counting"
+  args <- getArgs
+  when (length args /= 1) $ error "./parsertest filename"
+  let fn = args !! 0 
+      basename = takeBaseName fn 
  
   bstr <- LB.readFile fn 
   let unzipped = decompress bstr 
