@@ -1,6 +1,20 @@
 {-# LANGUAGE ScopedTypeVariables, BangPatterns, GADTs, FlexibleContexts, 
              FlexibleInstances, TypeFamilies #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      : HEP.Parser.LHCOAnalysis.Parse
+-- Copyright   : (c) 2009,2010,2013 Ian-Woo Kim
+--
+-- License     : GPL-3
+-- Maintainer  : Ian-Woo Kim <ianwookim@gmail.com>
+-- Stability   : experimental
+-- Portability : GHC
+--
+-- parsing LHCO format files
+--
+-----------------------------------------------------------------------------
+
 module HEP.Parser.LHCOAnalysis.Parse where
 
 import HEP.Parser.LHCOAnalysis.PhysObj
