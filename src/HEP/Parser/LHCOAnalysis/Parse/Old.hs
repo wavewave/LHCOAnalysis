@@ -29,7 +29,6 @@ import qualified HEP.Parser.LHCOAnalysis.Parse as LHCOP
 data Parsed = Comment B.ByteString | Zero Int | Nonzero (Int,EachObj) | Strange
               deriving (Show)
 
-
 type Merged = Parsed
 
 parsestr :: B.ByteString -> [PhyEventClassified]
@@ -59,8 +58,6 @@ mergeZeroParsed (x0:x1:xs) = mergeZero x0 x1 : mergeZeroParsed xs
 
 mergeZero [Zero evnum] x1 = (evnum,x1) 
 
---mergeZero x0 x1 = x1
-
 isComment :: Parsed -> Bool 
 isComment (Comment _) = True
 isComment _ = False
@@ -77,9 +74,6 @@ unNonzero :: Parsed -> (Int, EachObj)
 unNonzero (Nonzero x) = x
 unNonzero _ = undefined
 
-
-
-
 classify_line :: B.ByteString -> Parsed 
 classify_line bstr = let trimmed = B.dropWhile (isSpaceChar8) bstr
                      in if B.null trimmed 
@@ -90,14 +84,12 @@ classify_line bstr = let trimmed = B.dropWhile (isSpaceChar8) bstr
                                   '0' -> parse_zero trimmed
                                   _   -> parse_nonzero trimmed
 
-
 parse_zero :: B.ByteString -> Parsed
 parse_zero bstr = let bstrlst = B.split ' ' bstr
                       _:a2:[] = take 2 $ filter (not . B.null) bstrlst
                       b2 = maybe 0 fst $ B.readInt a2
                       
                   in Zero b2
-
 
 parse_nonzero :: B.ByteString -> Parsed
 parse_nonzero bstr 

@@ -10,7 +10,7 @@
 -- Stability   : experimental
 -- Portability : GHC
 --
--- parsing LHCO format files
+-- parsing LHCO format files using the attoparsec library
 --
 -----------------------------------------------------------------------------
 
@@ -75,14 +75,14 @@ nonzeroline = do no  <- skipSpace >> decimal
                      takeTill isEndOfLine >> endOfLine
                      return (LHCOLine no typ eta phi pt jmas ntrk btag hadem dum1 dum2)
 
-event :: Parser PhyEventClassified -- ((Int,Int),[(Int,EachObj)])
+event :: Parser PhyEventClassified
 event = do z <- zeroline
            nz <- many1 nonzeroline 
            let dat = (z,map ((,) <$> lhco_lineno <*> mkEachObj) nz)
                f ((i,_),x) = (i,x)
            (return . constructPhysObjClass . f) dat
              
-lhco :: Parser [PhyEventClassified] -- [((Int,Int),[(Int,EachObj)])] -- [((Int,Int),[Text])] -- [PhyEventClassified] 
+lhco :: Parser [PhyEventClassified]
 lhco = do header
           many event
 
