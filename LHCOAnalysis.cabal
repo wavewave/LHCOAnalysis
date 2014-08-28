@@ -9,11 +9,14 @@ License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
 Build-Depends:	base>4, 
-		bytestring, 
-		mtl > 2, 
-		bytestring-lexing, 
-		split, 
-		LHCOAnalysis-type
+                attoparsec,
+		        bytestring, 
+		        bytestring-lexing, 
+		        mtl > 2, 
+		        split, 
+                text,
+		        LHCOAnalysis-type
+
 Build-Type: 	Simple
 
 hs-source-dirs: src
@@ -22,8 +25,9 @@ ghc-prof-options: -caf-all -auto-all
 
 
 Exposed-Modules: 
-		 HEP.Parser.LHCOAnalysis,
+		 HEP.Parser.LHCOAnalysis
 		 HEP.Parser.LHCOAnalysis.Parse
+         HEP.Parser.LHCOAnalysis.Parse.Old
 
 		 
 		 
