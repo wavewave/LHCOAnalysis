@@ -17,7 +17,7 @@
 
 module HEP.Parser.LHCOAnalysis.Parse.Old where
 
-import           Data.ByteString.Lex.Lazy.Double
+import           Data.ByteString.Lex.Fractional
 import           Data.ByteString.Internal  
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.List.Split as SP
