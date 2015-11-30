@@ -4,7 +4,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      : HEP.Parser.LHCOAnalysis.Parse.Old
--- Copyright   : (c) 2009,2010,2013,2014 Ian-Woo Kim
+-- Copyright   : (c) 2009,2010,2013-2015 Ian-Woo Kim
 --
 -- License     : GPL-3
 -- Maintainer  : Ian-Woo Kim <ianwookim@gmail.com>
@@ -19,7 +19,7 @@ module HEP.Parser.LHCOAnalysis.Parse.Old where
 
 import           Data.ByteString.Lex.Fractional
 import           Data.ByteString.Internal  
-import qualified Data.ByteString.Lazy.Char8 as B
+import qualified Data.ByteString.Char8 as B
 import qualified Data.List.Split as SP
 -- 
 import HEP.Parser.LHCOAnalysis.PhysObj
@@ -98,15 +98,15 @@ parse_nonzero bstr
               = take 11 $ filter (not . B.null) bstrlst
           objid = maybe 0 fst $ B.readInt a1 
           typ = maybe 0 fst $ B.readInt a2
-          eta = maybe 0 fst $ readDouble a3
-          phi = maybe 0 fst $ readDouble a4
-          pt  = maybe 0 fst $ readDouble a5
-          jmas= maybe 0 fst $ readDouble a6
-          ntrk= maybe 0 fst $ readDouble a7
-          btag= maybe 0 fst $ readDouble a8
-          hadem= maybe 0 fst $ readDouble a9
-          dum1= maybe 0 fst $ readDouble a10
-          dum2= maybe 0 fst $ readDouble a11
+          eta = maybe 0 fst $ readSigned readDecimal a3
+          phi = maybe 0 fst $ readSigned readDecimal a4
+          pt  = maybe 0 fst $ readSigned readDecimal a5
+          jmas= maybe 0 fst $ readSigned readDecimal a6
+          ntrk= maybe 0 fst $ readSigned readDecimal a7
+          btag= maybe 0 fst $ readSigned readDecimal a8
+          hadem= maybe 0 fst $ readSigned readDecimal a9
+          dum1= maybe 0 fst $ readSigned readDecimal a10
+          dum2= maybe 0 fst $ readSigned readDecimal a11
       in  Nonzero (objid,  
                    mkEachObj typ eta phi pt jmas ntrk  
                              btag hadem dum1 dum2 )
